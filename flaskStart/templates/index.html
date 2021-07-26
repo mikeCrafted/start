@@ -78,8 +78,8 @@
                     </select>
                     <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(userTableFields, field)">
                 </div>
-                <button v-on:click="addTableColumn" v-bind:disabled="!lastFieldFilled">Add Table Column</button>
-                <input type="text" v-bind:value="loginView" v-model="loginView" placeholder="Login route">
+                <button v-on:click="extendArrayByElement(userTableFields, {})" v-bind:disabled="!lastFieldFilled">Add Table Column</button>
+                The login view/route: <input type="text" v-bind:value="loginView" v-model="loginView" placeholder="Login route">
             </div>
         </div>
 
@@ -88,7 +88,23 @@
             <span class="checkmark-ckb"></span>
         </label>
 
-        <div v-if="wtForms.show">WT Forms</div>
+        <div v-if="wtForms.show">WT Forms
+            <span>Use CSRF Token</span>
+            <select v-model="wtForms.useCsrf" v-bind:value="wtForms.useCsrf">
+                <option>true</option>
+                <option>false</option>
+            </select>
+            
+            <div v-for="form in wtForms.forms">
+               <span>Form Name</span>
+               <input type="text" v-bind:value="form.name" v-model="form.name">
+                <div v-for="field in form.fields">
+                    <input type="text" v-bind:value="field.name" v-model="field.name">
+                </div>
+                <button v-on:click="extendArrayByElement(form.fields, {})">Add Field</button>
+            </div>
+            <button v-on:click="extendArrayByElement(wtForms.forms, {})">Add Form</button>
+        </div>
 
         <label class="container">Add Bat Starter File
             <input v-model="batStarter" v-on:click="batStarter = !batStarter" type="checkbox">

@@ -1,6 +1,7 @@
 /*
     TODO:
     #) get package verions either from pip website or use api
+    #) write function to validate if last el of array has data, otherwise disalble button
 */
 
 var app = new Vue({
@@ -35,14 +36,29 @@ var app = new Vue({
         loginView: 'login',
         wtForms: {
             show: false,
+            useCsrf: true,
+            forms: [
+                { 
+                    // https://github.com/CoreyMSchafer/code_snippets/blob/master/Python/Flask_Blog/03-Forms-and-Validation/forms.py
+                    // https://flask-wtf.readthedocs.io/en/0.15.x/quickstart/#creating-forms
+                    name: 'RegistrationForm', 
+                    fields: [
+                        { name: 'username', validators: [] },
+                        { name: 'email', validators: [] },
+                        { name: 'password', validators: [] },
+                        { name: 'confirm_password', validators: ["EqualsTo('password')"] }
+                    ] 
+                },
+            ],
         },
+        addWtForms: false
     },
     methods: {
         removeElementFromDatasource: function(datasource, element) {
             datasource.splice(datasource.indexOf(element), 1);
         },
-        addTableColumn: function() {
-            this.userTableFields.splice(this.userTableFields.length, 1, {});
+        extendArrayByElement: function(array, element) {
+            array.splice(array.length, 1, element);
         },
         sendData: function() {
             fetch(`${window.origin}/create`, {
@@ -91,6 +107,7 @@ var app = new Vue({
                     { name: 'Bcrypt-Flask', version: '1.0.1', type: '==' }
                 ];
                 handlePackages(this.requirements, packages, this.addAuthSys);
+                this.extendArrayByElement(this.wtForms.forms, { name: 'LoginForm' });
             },
             deep: true
         },
@@ -103,10 +120,20 @@ var app = new Vue({
             },
             deep: true
         },
+        checkForms() {
+            const package = [ { name: 'Flask-WTF', version: '2.3.3', type: '==' } ];
+            handlePackages(this.requirements, package, this.wtForms.show);
+        }
+    },
+    computed: {
+        checkForms() {
+            return this.wtForms.show;
+        }
     }
 })
 
 // Function to check if package is already included and add/delete
+// requirements and packages are lists, condition is boolean
 function handlePackages(requirements, packages, condition) {
     if (condition === true) {
         // Looping over packages to add
