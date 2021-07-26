@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'main.css') }}">
+        <title>Flask Start</title>
+    </head>
+
+    <body>
+        <div id="app" class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+
+        <script src="{{ url_for('static', filename = 'vue.min.js') }}"></script>
+        <script src="{{ url_for('static', filename = 'main.js') }}"></script>
+    </body>
+</html>

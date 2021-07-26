@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    
+    <h1 v-if="projectName == ''">Generate Flask project template</h1>
+    <h1 v-else>Generate [[ projectName ]]</h1>
+
+    <input v-model="projectName" type="text" placeholder="Project name">
+    
+    <div class="form-checkbox-container">
+        <label class="container">Create Virtual Enironment
+            <input v-model="virtEnv.show" v-on:click="virtEnv.show = !virtEnv.show" type="checkbox">
+            <span class="checkmark-ckb"></span>
+        </label>
+
+        <div v-if="virtEnv.show">Create Virtual Enironment
+            <input type="text" v-model="virtEnv.name" v-bind:value="virtEnv.name">
+            <div v-for="param in virtEnv.params">
+                <span>[[ param.name ]]</span>
+                <select v-model="param.value" v-bind:value="param.value">
+                    <option>true</option>
+                    <option>false</option>
+                </select>
+            </div>
+            
+
+        </div>
+        
+        <label class="container">Add Database
+            <input v-model="addDatabase" v-on:click="addDatabase = !addDatabase; addAuthSys = false" type="checkbox">
+            <span class="checkmark-ckb"></span>
+        </label>
+
+        <div v-if="addDatabase">
+            Chose Database
+            <select v-model="dbType">
+                <option>SQL Lite</option>
+                <option>MySQL</option>
+            </select>
+
+            <label v-if="dbType" class="container">Add Authentication System
+                <input v-model="addAuthSys" v-on:click="addAuthSys = !addAuthSys" type="checkbox">
+                <span class="checkmark-ckb"></span>
+            </label>
+    
+            <div v-if="addAuthSys">Authentication system
+                <!--Generate User Table fields-->
+                <div class="authTabelHeader">
+                    <span>Name</span>
+                    <span>Primary key</span>
+                    <span>Nullable</span>
+                    <span>Unique</span>
+                    <span>Type</span>
+                </div>
+                <div v-for="field in userTableFields">
+                    <input type="text" v-bind:value="field.name" v-model="field.name">
+                    <select v-model="field.pk" v-bind:value="field.pk">
+                        <option>true</option>
+                        <option>false</option>
+                    </select>
+                    <select v-model="field.nullable" v-bind:value="field.nullable">
+                        <option>true</option>
+                        <option>false</option>
+                    </select>
+                    <select v-model="field.unique" v-bind:value="field.unique">
+                        <option>true</option>
+                        <option>false</option>
+                    </select>
+                    <select v-model="field.type" v-bind:value="field.type">
+                        <option>Integer</option>
+                        <option>Float</option>
+                        <option>String</option>
+                        <option>Text</option>
+                        <option>Boolean</option>
+                        <option>Date</option>
+                        <option>DateTime</option>
+                        <option>Time</option>
+                    </select>
+                    <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(userTableFields, field)">
+                </div>
+                <button v-on:click="addTableColumn" v-bind:disabled="!lastFieldFilled">Add Table Column</button>
+                <input type="text" v-bind:value="loginView" v-model="loginView" placeholder="Login route">
+            </div>
+        </div>
+
+        <label class="container">Use WT Forms
+            <input v-model="wtForms.show" v-on:click="wtForms.show = !wtForms.show" type="checkbox">
+            <span class="checkmark-ckb"></span>
+        </label>
+
+        <div v-if="wtForms.show">WT Forms</div>
+
+        <label class="container">Add Bat Starter File
+            <input v-model="batStarter" v-on:click="batStarter = !batStarter" type="checkbox">
+            <span class="checkmark-ckb"></span>
+        </label>
+
+        <div v-if="batStarter">Bat starter</div>
+
+        <label class="container">Use Blueprints
+            <input v-model="blueprints" v-on:click="blueprints = !blueprints" type="checkbox">
+            <span class="checkmark-ckb"></span>
+        </label>
+
+        <div v-if="blueprints">Blueprints</div>
+    </div>
+    
+    <h2>Requirements</h2>
+    <div v-for="package in requirements" v-bind:key="package.name">
+        <input type="text" v-bind:value="package.name" v-model="package.name">
+        <select v-model="package.type" v-bind:value="package.type">
+            <option>==</option>
+            <option>>=</option>
+            <option><=</option>
+        </select>
+        <input type="text" v-bind:value="package.version" v-model="package.version">
+        <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(requirements, package)">
+    </div>
+
+    <button v-on:click="sendData" type="button" v-bind:disabled="projectName == ''">Create</button>
+
+
+    <!-- <a href="{{ url_for('static', filename = 'main.css') }}" download>Download</a> -->
+{% endblock content %}
