@@ -41,7 +41,8 @@ var app = new Vue({
                 { 
                     // https://github.com/CoreyMSchafer/code_snippets/blob/master/Python/Flask_Blog/03-Forms-and-Validation/forms.py
                     // https://flask-wtf.readthedocs.io/en/0.15.x/quickstart/#creating-forms
-                    name: 'RegistrationForm', 
+                    name: 'RegistrationForm',
+                    lastFieldFilled: true,
                     fields: [
                         { name: 'username', validators: [] },
                         { name: 'email', validators: [] },
@@ -107,7 +108,13 @@ var app = new Vue({
                     { name: 'Bcrypt-Flask', version: '1.0.1', type: '==' }
                 ];
                 handlePackages(this.requirements, packages, this.addAuthSys);
-                this.extendArrayByElement(this.wtForms.forms, { name: 'LoginForm' });
+                this.extendArrayByElement(this.wtForms.forms, { 
+                    name: 'LoginForm', 
+                    fields: [
+                        { name: 'email', validators: [] },
+                        { name: 'password', validators: [] },
+                    ]  
+                });
             },
             deep: true
         },
@@ -123,12 +130,12 @@ var app = new Vue({
         checkForms() {
             const package = [ { name: 'Flask-WTF', version: '2.3.3', type: '==' } ];
             handlePackages(this.requirements, package, this.wtForms.show);
-        }
+        },
     },
     computed: {
         checkForms() {
             return this.wtForms.show;
-        }
+        },
     }
 })
 
