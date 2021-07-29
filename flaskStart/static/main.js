@@ -52,7 +52,8 @@ var app = new Vue({
                 },
             ],
         },
-        addWtForms: false
+        addWtForms: false,
+        emails: false,
     },
     methods: {
         removeElementFromDatasource: function(datasource, element) {
@@ -136,6 +137,21 @@ var app = new Vue({
         checkForms() {
             return this.wtForms.show;
         },
+        normalizeFormName() {
+            return this.wtForms.forms.map(function(form) {
+                let inputValue = form.name.trim();
+                if (inputValue.includes(' ') && inputValue.length > 0) {
+                    let components = form.name.split(' ');
+                    let lastPart = components[components.length - 1];
+                    components[components.length - 1] = lastPart[0].toUpperCase() + lastPart.slice(1);
+                    components[0] = components[0][0].toUpperCase() + components[0].slice(1);
+                    return form.name = components.join('');
+                }
+                else {
+                    return form.name;
+                }
+            });
+        }
     }
 })
 

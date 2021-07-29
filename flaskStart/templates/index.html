@@ -95,15 +95,15 @@
                 <option>false</option>
             </select>
             
-            <div v-for="form in wtForms.forms">
+            <div v-for="(form, index) in wtForms.forms">
                <span>Form Name</span>
-               <input type="text" v-bind:value="form.name" v-model="form.name">
+               <input type="text" v-bind:value="form.name" v-model="form.name"> [[ normalizeFormName[index] ]]
                 <div v-for="field in form.fields">
-                    <input type="text" v-bind:value="field.name" v-model="field.name">
+                    Field name: <input type="text" v-bind:value="field.name" v-model="field.name">
                 </div>
-                <button v-on:click="extendArrayByElement(form.fields, {})">Add Field</button>
+                <button v-on:click="extendArrayByElement(form.fields, { name: '', validators: [] })">Add Field</button>
             </div>
-            <button v-on:click="extendArrayByElement(wtForms.forms, {})">Add Form</button>
+            <button v-on:click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: false, fields: [] })">Add Form</button>
         </div>
 
         <label class="container">Add Bat Starter File
@@ -119,6 +119,13 @@
         </label>
 
         <div v-if="blueprints">Blueprints</div>
+
+        <label class="container">Emails
+            <input v-model="emails" v-on:click="emails = !emails" type="checkbox">
+            <span class="checkmark-ckb"></span>
+        </label>
+
+        <div v-if="emails">Emails</div>
     </div>
     
     <h2>Requirements</h2>
