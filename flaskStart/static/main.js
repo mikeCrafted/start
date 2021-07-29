@@ -2,6 +2,7 @@
     TODO:
     #) get package verions either from pip website or use api
     #) write function to validate if last el of array has data, otherwise disalble button
+    #) normalize Table names
 */
 
 var app = new Vue({
@@ -141,11 +142,8 @@ var app = new Vue({
             return this.wtForms.forms.map(function(form) {
                 let inputValue = form.name.trim();
                 if (inputValue.includes(' ') && inputValue.length > 0) {
-                    let components = form.name.split(' ');
-                    let lastPart = components[components.length - 1];
-                    components[components.length - 1] = lastPart[0].toUpperCase() + lastPart.slice(1);
-                    components[0] = components[0][0].toUpperCase() + components[0].slice(1);
-                    return form.name = components.join('');
+                    form.name = form.name.substring(0, form.name.indexOf(' ') + 1) + form.name[form.name.indexOf(' ') + 1].toUpperCase() + form.name.substring(form.name.indexOf(' ') + 2);
+                    return form.name = form.name.split(' ').join('');
                 }
                 else {
                     return form.name;
