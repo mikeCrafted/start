@@ -38,12 +38,13 @@
                 <option>MySQL</option>
             </select>
 
-            <label v-if="dbType" class="container">Add Authentication System
+            <label v-if="dbType" class="container">Add Authentication system
                 <input v-model="addAuthSys" v-on:click="addAuthSys = !addAuthSys" type="checkbox">
                 <span class="checkmark-ckb"></span>
             </label>
     
-            <div v-if="addAuthSys">Authentication system
+            <div v-if="addAuthSys">
+                User Table Name: <input type="text" v-model="authSys.userTableName" v-bind="authSys.userTableName">
                 <!--Generate User Table fields-->
                 <div class="authTabelHeader">
                     <span>Name</span>
@@ -52,7 +53,7 @@
                     <span>Unique</span>
                     <span>Type</span>
                 </div>
-                <div v-for="field in userTableFields">
+                <div v-for="field in authSys.userTableFields">
                     <input type="text" v-bind:value="field.name" v-model="field.name">
                     <select v-model="field.pk" v-bind:value="field.pk">
                         <option>true</option>
@@ -76,10 +77,10 @@
                         <option>DateTime</option>
                         <option>Time</option>
                     </select>
-                    <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(userTableFields, field)">
+                    <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(authSys.userTableFields, field)">
                 </div>
-                <button v-on:click="extendArrayByElement(userTableFields, {})" v-bind:disabled="!lastFieldFilled">Add Table Column</button>
-                The login view/route: <input type="text" v-bind:value="loginView" v-model="loginView" placeholder="Login route">
+                <button v-on:click="extendArrayByElement(authSys.userTableFields, {})" v-bind:disabled="!authSys.lastFieldFilled">Add Table Column</button>
+                The login view/route: <input type="text" v-bind:value="authSys.loginView" v-model="authSys.loginView" placeholder="Login route">
             </div>
         </div>
 
@@ -101,9 +102,9 @@
                 <div v-for="field in form.fields">
                     Field name: <input type="text" v-bind:value="field.name" v-model="field.name">
                 </div>
-                <button v-on:click="extendArrayByElement(form.fields, { name: '', validators: [] })">Add Field</button>
+                <button v-on:click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled">Add Field</button>
             </div>
-            <button v-on:click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: false, fields: [] })">Add Form</button>
+            <button v-on:click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })">Add Form</button>
         </div>
 
         <label class="container">Add Bat Starter File

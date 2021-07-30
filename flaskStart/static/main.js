@@ -1,7 +1,6 @@
 /*
     TODO:
     #) get package verions either from pip website or use api
-    #) write function to validate if last el of array has data, otherwise disalble button
     #) normalize Table names
 */
 
@@ -27,14 +26,17 @@ var app = new Vue({
             { name: 'flask', version: '2.0.1', type: '=='},
         ],
         dbType: '',
-        userTableFields: [
-            { name: 'id', pk: true, nullable: false, type: 'Integer', unique: true },
-            { name: 'name', pk: false, nullable: false, type: 'String', unique: true },
-            { name: 'email', pk: false, nullable: false, type: 'String', unique: true },
-            { name: 'password', pk: false, nullable: false, type: 'String', unique: false }
-        ],
-        lastFieldFilled: true,
-        loginView: 'login',
+        authSys: {
+            userTableName: 'User',
+            userTableFields: [
+                { name: 'id', pk: true, nullable: false, type: 'Integer', unique: true },
+                { name: 'name', pk: false, nullable: false, type: 'String', unique: true },
+                { name: 'email', pk: false, nullable: false, type: 'String', unique: true },
+                { name: 'password', pk: false, nullable: false, type: 'String', unique: false }
+            ],
+            lastFieldFilled: true,
+            loginView: 'login',
+        },
         wtForms: {
             show: false,
             useCsrf: true,
@@ -88,17 +90,10 @@ var app = new Vue({
         },
     },
     watch: {
-        userTableFields: {
+        'authSys.userTableFields': {
             handler: function() {
-                let lastEl = this.userTableFields[this.userTableFields.length - 1].name;
-                if (lastEl === "" || lastEl === undefined) {
-                    this.lastFieldFilled = false;
-                }
-                else {
-                    this.lastFieldFilled = true;
-                }
-            },
-            deep: true
+                this.authSys.lastFieldFilled = checkLastField(this.authSys.userTableFields);
+            }
         },
         dbType: function() {
             console.log(this.dbType);
@@ -110,13 +105,15 @@ var app = new Vue({
                     { name: 'Bcrypt-Flask', version: '1.0.1', type: '==' }
                 ];
                 handlePackages(this.requirements, packages, this.addAuthSys);
-                this.extendArrayByElement(this.wtForms.forms, { 
-                    name: 'LoginForm', 
-                    fields: [
-                        { name: 'email', validators: [] },
-                        { name: 'password', validators: [] },
-                    ]  
-                });
+                if (!this.wtForms.forms.some(e => e.name === 'LoginForm')) {
+                    this.extendArrayByElement(this.wtForms.forms, { 
+                        name: 'LoginForm', 
+                        fields: [
+                            { name: 'email', validators: [] },
+                            { name: 'password', validators: [] },
+                        ]  
+                    });
+                }
             },
             deep: true
         },
@@ -129,20 +126,27 @@ var app = new Vue({
             },
             deep: true
         },
-        checkForms() {
-            const package = [ { name: 'Flask-WTF', version: '2.3.3', type: '==' } ];
-            handlePackages(this.requirements, package, this.wtForms.show);
+        'wtForms.show': {
+            handler: function() {
+                const package = [ { name: 'Flask-WTF', version: '2.3.3', type: '==' } ];
+                handlePackages(this.requirements, package, this.wtForms.show);
+            }
         },
+        'wtForms.forms': {
+            handler: function() {
+                for (let i = 0; i < this.wtForms.forms.length; i++) {
+                    this.wtForms.forms[i].lastFieldFilled = checkLastField(this.wtForms.forms[i].fields);
+                }
+            },
+            deep: true
+        }
     },
     computed: {
-        checkForms() {
-            return this.wtForms.show;
-        },
         normalizeFormName() {
             return this.wtForms.forms.map(function(form) {
                 let inputValue = form.name.trim();
                 if (inputValue.includes(' ') && inputValue.length > 0) {
-                    form.name = form.name.substring(0, form.name.indexOf(' ') + 1) + form.name[form.name.indexOf(' ') + 1].toUpperCase() + form.name.substring(form.name.indexOf(' ') + 2);
+                    form.name = form.name[0].toUpperCase() + form.name.substring(1, form.name.indexOf(' ') + 1) + form.name[form.name.indexOf(' ') + 1].toUpperCase() + form.name.substring(form.name.indexOf(' ') + 2);
                     return form.name = form.name.split(' ').join('');
                 }
                 else {
@@ -171,5 +175,18 @@ function handlePackages(requirements, packages, condition) {
         for (let i = 0; i < packages.length; i++) {
             requirements.forEach(package => package.name === packages[i].name ? requirements.splice(requirements.indexOf(package), 1) : package);
         }
+    }
+}
+
+// Checks if last element of list of inputs is empty
+// input empty -> return false
+// input filled -> return true
+function checkLastField(list) {
+    let lastEl = list[list.length - 1].name;
+    if (lastEl === "" || lastEl === undefined) {
+        return false;
+    }
+    else {
+        return true;
     }
 }
