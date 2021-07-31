@@ -9,7 +9,7 @@
     
     <div class="form-checkbox-container">
         <label class="container">Create Virtual Enironment
-            <input v-model="virtEnv.show" v-on:click="virtEnv.show = !virtEnv.show" type="checkbox">
+            <input v-model="virtEnv.show" @click="virtEnv.show = !virtEnv.show" type="checkbox">
             <span class="checkmark-ckb"></span>
         </label>
 
@@ -25,7 +25,7 @@
         </div>
         
         <label class="container">Add Database
-            <input v-model="addDatabase" v-on:click="addDatabase = !addDatabase; addAuthSys = false" type="checkbox">
+            <input v-model="addDatabase" @click="addDatabase = !addDatabase; addAuthSys = false" type="checkbox">
             <span class="checkmark-ckb"></span>
         </label>
 
@@ -37,7 +37,7 @@
             </select>
 
             <label v-if="dbType" class="container">Add Authentication system
-                <input v-model="addAuthSys" v-on:click="addAuthSys = !addAuthSys" type="checkbox">
+                <input v-model="addAuthSys" @click="addAuthSys = !addAuthSys" type="checkbox">
                 <span class="checkmark-ckb"></span>
             </label>
     
@@ -75,15 +75,15 @@
                         <option>DateTime</option>
                         <option>Time</option>
                     </select>
-                    <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(authSys.userTableFields, field)">
+                    <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(authSys.userTableFields, field)">
                 </div>
-                <button v-on:click="extendArrayByElement(authSys.userTableFields, {})" v-bind:disabled="!authSys.lastFieldFilled">Add Table Column</button>
+                <button @click="extendArrayByElement(authSys.userTableFields, {})" v-bind:disabled="!authSys.lastFieldFilled">Add Table Column</button>
                 The login view/route: <input type="text" v-bind:value="authSys.loginView" v-model="authSys.loginView" placeholder="Login route">
             </div>
         </div>
 
         <label class="container">Use WT Forms
-            <input v-model="wtForms.show" v-on:click="wtForms.show = !wtForms.show" type="checkbox">
+            <input v-model="wtForms.show" @click="wtForms.show = !wtForms.show" type="checkbox">
             <span class="checkmark-ckb"></span>
         </label>
 
@@ -97,32 +97,47 @@
             <div v-for="(form, index) in wtForms.forms">
                 <span>Form Name</span>
                 <input type="text" v-bind:value="form.name" v-model="form.name">
-                <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(wtForms.forms, form)">
+                <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
                     <div v-for="field in form.fields">
                         Field name: <input type="text" v-bind:value="field.name" v-model="field.name">
-                        <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(form.fields, field)">
+                        <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
+                        <button @click="addValidators(field)">Add validators</button>
                     </div>
-                <button v-on:click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled">Add Field</button>
+                <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled">Add Field</button>
             </div>
-            <button v-on:click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })">Add Form</button>
+            <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })">Add Form</button>
+
+            Configure Validators
+            <div v-for="validator in wtForms.validators">
+                <label class="container">
+                    [[ validator.name ]]
+                    <input v-model="validator.use" v-bind="validator.use" @click="updateSelectedValidators(validator)" type="checkbox">
+                    <span class="checkmark-ckb"></span>
+                </label>
+                <input v-if="validator.param != undefined" v-model="validator.param" type="text">
+                <input v-if="validator.min != undefined" v-model="validator.min" type="number">
+                <input v-if="validator.max != undefined" v-model="validator.max" type="number">
+                <br><br>
+            </div>
+            <button @click="resetValidatorsConfiguration()">Reset Configuration</button>
         </div>
 
         <label class="container">Add Bat Starter File
-            <input v-model="batStarter" v-on:click="batStarter = !batStarter" type="checkbox">
+            <input v-model="batStarter" @click="batStarter = !batStarter" type="checkbox">
             <span class="checkmark-ckb"></span>
         </label>
 
         <div v-if="batStarter">Bat starter</div>
 
         <label class="container">Use Blueprints
-            <input v-model="blueprints" v-on:click="blueprints = !blueprints" type="checkbox">
+            <input v-model="blueprints" @click="blueprints = !blueprints" type="checkbox">
             <span class="checkmark-ckb"></span>
         </label>
 
         <div v-if="blueprints">Blueprints</div>
 
         <label class="container">Emails
-            <input v-model="emails" v-on:click="emails = !emails" type="checkbox">
+            <input v-model="emails" @click="emails = !emails" type="checkbox">
             <span class="checkmark-ckb"></span>
         </label>
 
@@ -138,10 +153,10 @@
             <option><=</option>
         </select>
         <input type="text" v-bind:value="package.version" v-model="package.version">
-        <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(requirements, package)">
+        <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(requirements, package)">
     </div>
 
-    <button v-on:click="sendData" type="button" v-bind:disabled="projectName == ''">Create</button>
+    <button @click="sendData" type="button" v-bind:disabled="projectName == ''">Create</button>
 
 
     <!-- <a href="{{ url_for('static', filename = 'main.css') }}" download>Download</a> -->

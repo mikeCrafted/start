@@ -1,6 +1,7 @@
 /*
     TODO:
     #) get package verions either from pip website or use api
+    #) adding validators: section where choose with checkboxes and inputs for params, then each field button to add current config
 */
 
 var app = new Vue({
@@ -49,17 +50,31 @@ var app = new Vue({
                         { name: 'username', validators: [] },
                         { name: 'email', validators: [] },
                         { name: 'password', validators: [] },
-                        { name: 'confirm_password', validators: ["EqualsTo('password')"] }
+                        { name: 'confirm_password', validators: ["EqualTo('password')"] }
                     ] 
                 },
             ],
+            validators: [
+                { name: 'EqualTo', param: '', use: false },
+                { name: 'Length', min: '', max: '', use: false },
+                { name: 'DataRequired', use: false },
+                { name: 'Email', use: false },
+                { name: 'Optional', use: false },
+                { name: 'NumberRange', min: '', max: '', use: false },
+                { name: 'InputRequired', use: false },
+                { name: 'MacAddress', use: false },
+                { name: 'IPAddress', use: false },
+                { name: 'Regexp', param: '', use: false },
+                { name: 'URL', param: '', use: false }
+            ],
+            selectedValidators: [],
         },
         addWtForms: false,
         emails: false,
     },
     methods: {
-        removeElementFromDatasource: function(datasource, element) {
-            datasource.splice(datasource.indexOf(element), 1);
+        removeElementFromArray: function(array, element) {
+            array.splice(array.indexOf(element), 1);
         },
         extendArrayByElement: function(array, element) {
             array.splice(array.length, 1, element);
@@ -87,6 +102,26 @@ var app = new Vue({
                 console.log("Fetch error: " + error);
             });
         },
+        addValidators: function(field) {
+            console.log(field.validators);
+        },
+        updateSelectedValidators: function(validator) {
+            if (this.wtForms.selectedValidators.includes(validator)) {
+                // remove validator
+                this.wtForms.selectedValidators.splice(this.wtForms.selectedValidators.indexOf(validator), 1);
+                validator.use = false;
+            }
+            else {
+                // add validator
+                this.wtForms.selectedValidators.splice(this.wtForms.selectedValidators.length, 1, validator);
+                validator.use = true;
+            }
+        },
+        resetValidatorsConfiguration: function() {
+            // clear array and set all use fields to false
+            this.wtForms.selectedValidators.splice(0);
+            this.wtForms.validators.forEach(validator => validator.use = false);
+        }
     },
     watch: {
         'authSys.userTableFields': {
