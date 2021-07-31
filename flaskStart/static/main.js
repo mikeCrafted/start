@@ -1,7 +1,6 @@
 /*
     TODO:
     #) get package verions either from pip website or use api
-    #) normalize Table names
 */
 
 var app = new Vue({
@@ -139,19 +138,17 @@ var app = new Vue({
                 }
             },
             deep: true
+        },
+        'authSys.userTableName': {
+            handler: function() {
+                this.authSys.userTableName = stringToCamelCase(this.authSys.userTableName);
+            }
         }
     },
     computed: {
         normalizeFormName() {
             return this.wtForms.forms.map(function(form) {
-                let inputValue = form.name.trim();
-                if (inputValue.includes(' ') && inputValue.length > 0) {
-                    form.name = form.name[0].toUpperCase() + form.name.substring(1, form.name.indexOf(' ') + 1) + form.name[form.name.indexOf(' ') + 1].toUpperCase() + form.name.substring(form.name.indexOf(' ') + 2);
-                    return form.name = form.name.split(' ').join('');
-                }
-                else {
-                    return form.name;
-                }
+                form.name = stringToCamelCase(form.name);
             });
         }
     }
@@ -188,5 +185,17 @@ function checkLastField(list) {
     }
     else {
         return true;
+    }
+}
+
+// converts string to its camel case representation
+function stringToCamelCase(string) {
+    let workString = string.trim();
+    if (workString.includes(' ') && workString.length > 0) {
+        workString = workString[0].toUpperCase() + workString.substring(1, workString.indexOf(' ') + 1) + workString[workString.indexOf(' ') + 1].toUpperCase() + workString.substring(workString.indexOf(' ') + 2);
+        return workString.split(' ').join('');
+    }
+    else {
+        return string;
     }
 }

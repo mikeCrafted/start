@@ -22,8 +22,6 @@
                     <option>false</option>
                 </select>
             </div>
-            
-
         </div>
         
         <label class="container">Add Database
@@ -98,7 +96,7 @@
             
             <div v-for="(form, index) in wtForms.forms">
                 <span>Form Name</span>
-                <input type="text" v-bind:value="form.name" v-model="form.name"> [[ normalizeFormName[index] ]]
+                <input type="text" v-bind:value="form.name" v-model="form.name">
                 <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" v-on:click="removeElementFromDatasource(wtForms.forms, form)">
                     <div v-for="field in form.fields">
                         Field name: <input type="text" v-bind:value="field.name" v-model="field.name">
