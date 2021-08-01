@@ -1,7 +1,7 @@
 /*
     TODO:
     #) get package verions either from pip website or use api
-    #) resetting validators form, checking for duplicates in validators, removing single validators (onlick?)
+    #) 
 */
 
 var app = new Vue({
@@ -104,16 +104,13 @@ var app = new Vue({
         },
         setValidators: function(field) {
             // convert objects from selectedValidators to strings and then append
-            let validatorStrings = [];
+            field.validators.splice(0);
             this.wtForms.selectedValidators.forEach(validator => {
                 let args = ''
                 if (validator.param) { args += `'${validator.param}'`; }
-                else if (validator.min) {
-                    args += `min = ${validator.min}, max = ${validator.max}`;
-                }
+                else if (validator.min) { args += `min = ${validator.min}, max = ${validator.max}`; }
                 field.validators.push(validator.name + '(' + args + ')');
             });
-            console.log(field.validators);
         },
         updateSelectedValidators: function(validator) {
             if (this.wtForms.selectedValidators.includes(validator)) {
@@ -128,9 +125,14 @@ var app = new Vue({
             }
         },
         resetValidatorsConfiguration: function() {
-            // clear array and set all use fields to false
+            // clear array and reset all use fields
             this.wtForms.selectedValidators.splice(0);
-            this.wtForms.validators.forEach(validator => validator.use = false);
+            this.wtForms.validators.forEach(validator => { 
+                validator.use = false;
+                validator.min ? validator.min = '' : validator;
+                validator.max ? validator.max = '' : validator;
+                validator.param ? validator.param = '' : validator;
+            });
         }
     },
     watch: {

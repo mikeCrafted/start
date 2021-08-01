@@ -100,7 +100,9 @@
                 <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
                     <div v-for="field in form.fields">
                         Field name: <input type="text" v-bind:value="field.name" v-model="field.name">
-                        [[ field.validators.join(', ') ]]
+                        <span v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
+                            [[ validator ]], 
+                        </span>
                         <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
                         <button @click="setValidators(field)">Set validators</button>
                     </div>
@@ -116,8 +118,8 @@
                     <span class="checkmark-ckb"></span>
                 </label>
                 <input v-if="validator.param != undefined" v-model="validator.param" type="text">
-                <input v-if="validator.min != undefined" v-model="validator.min" type="number">
-                <input v-if="validator.max != undefined" v-model="validator.max" type="number">
+                <input v-if="validator.min != undefined" v-model="validator.min" v-bind:value="validator.min" type="number">
+                <input v-if="validator.max != undefined" v-model="validator.max" v-bind:value="validator.max" type="number">
                 <br><br>
             </div>
             <button @click="resetValidatorsConfiguration()">Reset Configuration</button>
