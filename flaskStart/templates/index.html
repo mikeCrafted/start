@@ -100,8 +100,9 @@
                 <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
                     <div v-for="field in form.fields">
                         Field name: <input type="text" v-bind:value="field.name" v-model="field.name">
+                        [[ field.validators.join(', ') ]]
                         <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
-                        <button @click="addValidators(field)">Add validators</button>
+                        <button @click="setValidators(field)">Set validators</button>
                     </div>
                 <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled">Add Field</button>
             </div>

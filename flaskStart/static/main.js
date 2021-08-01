@@ -1,7 +1,7 @@
 /*
     TODO:
     #) get package verions either from pip website or use api
-    #) adding validators: section where choose with checkboxes and inputs for params, then each field button to add current config
+    #) resetting validators form, checking for duplicates in validators, removing single validators (onlick?)
 */
 
 var app = new Vue({
@@ -102,7 +102,17 @@ var app = new Vue({
                 console.log("Fetch error: " + error);
             });
         },
-        addValidators: function(field) {
+        setValidators: function(field) {
+            // convert objects from selectedValidators to strings and then append
+            let validatorStrings = [];
+            this.wtForms.selectedValidators.forEach(validator => {
+                let args = ''
+                if (validator.param) { args += `'${validator.param}'`; }
+                else if (validator.min) {
+                    args += `min = ${validator.min}, max = ${validator.max}`;
+                }
+                field.validators.push(validator.name + '(' + args + ')');
+            });
             console.log(field.validators);
         },
         updateSelectedValidators: function(validator) {
@@ -185,7 +195,7 @@ var app = new Vue({
             return this.wtForms.forms.map(function(form) {
                 form.name = stringToCamelCase(form.name);
             });
-        }
+        },
     }
 })
 
