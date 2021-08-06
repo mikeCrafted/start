@@ -1,7 +1,8 @@
 /*
     TODO:
     #) get package verions either from pip website or use api
-    #) 
+    #) add github
+    #) bat file
 */
 
 var app = new Vue({
@@ -71,6 +72,10 @@ var app = new Vue({
         },
         addWtForms: false,
         emails: false,
+        batStarter: {
+            show: false,
+            operatingSys: 'Windows',
+        }
     },
     methods: {
         removeElementFromArray: function(array, element) {

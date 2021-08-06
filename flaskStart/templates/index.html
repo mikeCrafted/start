@@ -126,11 +126,25 @@
         </div>
 
         <label class="container">Add Bat Starter File
-            <input v-model="batStarter" @click="batStarter = !batStarter" type="checkbox">
+            <input v-model="batStarter.show" @click="batStarter.show = !batStarter.show" type="checkbox">
             <span class="checkmark-ckb"></span>
         </label>
 
-        <div v-if="batStarter">Bat starter</div>
+        <div v-if="batStarter.show">Bat starter
+            <label class="container">Windows
+                <input v-model="batStarter.operatingSys" type="radio" value="Windows">
+                <span class="checkmark-rad"></span>
+            </label>
+            <label class="container">Mac
+                <input v-model="batStarter.operatingSys" type="radio" value="Mac">
+                <span class="checkmark-rad"></span>
+            </label>
+            <label class="container">Linux
+                <input v-model="batStarter.operatingSys" type="radio" value="Linux">
+                <span class="checkmark-rad"></span>
+            </label>
+            
+        </div>
 
         <label class="container">Use Blueprints
             <input v-model="blueprints" @click="blueprints = !blueprints" type="checkbox">
