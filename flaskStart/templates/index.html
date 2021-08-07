@@ -138,6 +138,10 @@
                     <input v-model="blueprint.addForms" @click="blueprint.addForms = !blueprint.addForms" type="checkbox">
                     <span class="checkmark-ckb"></span>
                 </label>
+                <div v-if="blueprint.addForms">
+                    <span @click="extendArrayByElement(blueprint.forms, form.name)" v-for="form in wtForms.forms">[[ form.name ]]</span>
+                    [[ blueprint.forms ]]
+                </div>
                 <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)">
             </div>
             <button @click="extendArrayByElement(blueprints.blueprintsList, { name: '', addForms: false, forms: [] })" v-bind:disabled="!blueprints.lastFieldFilled">Add Blueprint</button>
@@ -153,15 +157,16 @@
     
     <h2>Requirements</h2>
     <div v-for="package in requirements" v-bind:key="package.name">
-        <input type="text" v-bind:value="package.name" v-model="package.name">
-        <select v-model="package.type" v-bind:value="package.type">
+        <input type="text" v-model="package.name">
+        <select v-model="package.type">
             <option>==</option>
             <option>>=</option>
             <option><=</option>
         </select>
-        <input type="text" v-bind:value="package.version" v-model="package.version">
+        <input type="text" v-model="package.version">
         <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(requirements, package)">
     </div>
+    <button @click="extendArrayByElement(requirements, { name: '', version: '', type: '==' })">Add Package</button>
 
     <button @click="sendData" type="button" v-bind:disabled="projectName == ''">Create</button>
 

@@ -240,13 +240,12 @@ function handlePackages(requirements, packages, condition) {
 // input empty -> return false
 // input filled -> return true
 function checkLastField(list) {
+    if (list.length < 1) { return true; }
     let lastEl = list[list.length - 1].name;
     if (lastEl === "" || lastEl === undefined) {
         return false;
     }
-    else {
-        return true;
-    }
+    else { return true; }
 }
 
 // converts string to its camel case representation
