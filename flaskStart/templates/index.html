@@ -89,17 +89,17 @@
 
         <div v-if="wtForms.show">WT Forms
             <span>Use CSRF Token</span>
-            <select v-model="wtForms.useCsrf" v-bind:value="wtForms.useCsrf">
+            <select v-model="wtForms.useCsrf">
                 <option>true</option>
                 <option>false</option>
             </select>
             
             <div v-for="(form, index) in wtForms.forms">
                 <span>Form Name</span>
-                <input type="text" v-bind:value="form.name" v-model="form.name">
+                <input type="text" v-model="form.name">
                 <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
                     <div v-for="field in form.fields">
-                        Field name: <input type="text" v-bind:value="field.name" v-model="field.name">
+                        Field name: <input type="text" v-model="field.name">
                         <span v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
                             [[ validator ]], 
                         </span>
@@ -118,40 +118,30 @@
                     <span class="checkmark-ckb"></span>
                 </label>
                 <input v-if="validator.param != undefined" v-model="validator.param" type="text">
-                <input v-if="validator.min != undefined" v-model="validator.min" v-bind:value="validator.min" type="number">
-                <input v-if="validator.max != undefined" v-model="validator.max" v-bind:value="validator.max" type="number">
+                <input v-if="validator.min != undefined" v-model="validator.min" type="number">
+                <input v-if="validator.max != undefined" v-model="validator.max" type="number">
                 <br><br>
             </div>
             <button @click="resetValidatorsConfiguration()">Reset Configuration</button>
         </div>
 
-        <label class="container">Add Bat Starter File
-            <input v-model="batStarter.show" @click="batStarter.show = !batStarter.show" type="checkbox">
-            <span class="checkmark-ckb"></span>
-        </label>
-
-        <div v-if="batStarter.show">Bat starter
-            <label class="container">Windows
-                <input v-model="batStarter.operatingSys" type="radio" value="Windows">
-                <span class="checkmark-rad"></span>
-            </label>
-            <label class="container">Mac
-                <input v-model="batStarter.operatingSys" type="radio" value="Mac">
-                <span class="checkmark-rad"></span>
-            </label>
-            <label class="container">Linux
-                <input v-model="batStarter.operatingSys" type="radio" value="Linux">
-                <span class="checkmark-rad"></span>
-            </label>
-            
-        </div>
 
         <label class="container">Use Blueprints
-            <input v-model="blueprints" @click="blueprints = !blueprints" type="checkbox">
+            <input v-model="blueprints.show" @click="blueprints.show = !blueprints.show" type="checkbox">
             <span class="checkmark-ckb"></span>
         </label>
 
-        <div v-if="blueprints">Blueprints</div>
+        <div v-if="blueprints.show">Blueprints
+            <div v-for="blueprint in blueprints.blueprintsList">
+                <input type="text" v-model="blueprint.name">
+                <label class="container">Create Forms File
+                    <input v-model="blueprint.addForms" @click="blueprint.addForms = !blueprint.addForms" type="checkbox">
+                    <span class="checkmark-ckb"></span>
+                </label>
+                <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)">
+            </div>
+            <button @click="extendArrayByElement(blueprints.blueprintsList, { name: '', addForms: false, forms: [] })" v-bind:disabled="!blueprints.lastFieldFilled">Add Blueprint</button>
+        </div>
 
         <label class="container">Emails
             <input v-model="emails" @click="emails = !emails" type="checkbox">

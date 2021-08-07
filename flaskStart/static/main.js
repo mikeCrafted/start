@@ -2,7 +2,10 @@
     TODO:
     #) get package verions either from pip website or use api
     #) add github
-    #) bat file
+    #) add config file
+    #) add environment vars
+    #) change app creation
+    #) display available forms and create ui to add them to blueprint
 */
 
 var app = new Vue({
@@ -12,8 +15,6 @@ var app = new Vue({
         projectName: '',
         addDatabase: false,
         addAuthSys: false,
-        batStarter: false,
-        blueprints: false,
         virtEnv: {
             show: false,
             name: 'venv',
@@ -70,12 +71,14 @@ var app = new Vue({
             ],
             selectedValidators: [],
         },
-        addWtForms: false,
         emails: false,
-        batStarter: {
+        blueprints: {
             show: false,
-            operatingSys: 'Windows',
-        }
+            lastFieldFilled: true,
+            blueprintsList: [
+                { name: 'users', addForms: false, forms: [] }
+            ],
+        },
     },
     methods: {
         removeElementFromArray: function(array, element) {
@@ -138,7 +141,7 @@ var app = new Vue({
                 validator.max ? validator.max = '' : validator;
                 validator.param ? validator.param = '' : validator;
             });
-        }
+        },
     },
     watch: {
         'authSys.userTableFields': {
@@ -195,7 +198,13 @@ var app = new Vue({
             handler: function() {
                 this.authSys.userTableName = stringToCamelCase(this.authSys.userTableName);
             }
-        }
+        },
+        'blueprints.blueprintsList': {
+            handler: function() {
+                this.blueprints.lastFieldFilled = checkLastField(this.blueprints.blueprintsList);
+            },
+            deep: true
+        },
     },
     computed: {
         normalizeFormName() {
