@@ -4,10 +4,154 @@
     box-sizing: border-box;
 }
 
-.form-checkbox-container {
+:root {
+    --nav-bg-color: #508CBA;
+    --orange: #FFAB5D;
+    --nav-links-color: #E5E5E5;
+    --body-bg: #D8EBF9;
+    --dark-blue: #0C4470;
+    --success:  rgb(147, 204, 147);
+    --danger: rgb(240, 124, 124);
+    --info: rgb(162, 211, 240);
+    --mobile: 800px;
+}
+
+body {
+    display: grid;
+    grid-template-rows: 10vh 10fr 8vh;
+    grid-template-areas: 
+        'header header header'
+        'content content content';
+    height: 100vh;
+    max-width: 100vw;
+    background-color: var(--body-bg);
+    /* font-family: Arial, Helvetica, sans-serif; */
+    font-family: 'Raleway', sans-serif;
+    color: var(--dark-blue);
+}
+
+/* =========== Navigation bar =========== */
+nav {
+    grid-area: header;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    background-color: var(--nav-bg-color);
+    max-width: 100%;
+    border-bottom: solid #355C7A 10px;
+}
+
+.logo {
+    display: none;
+}
+
+.nav-links {
+    height: 100%;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    list-style: none;
+    justify-content: space-between;
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+
+.nav-links a {
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+    color: var(--nav-links-color);
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bolder;
+    padding: 10px;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+.nav-links li {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav-links-left {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.burger {
+    height: 50px;
+    width: 50px;
+    display: none;
+    border: 1px solid var(--nav-links-color);
+    border-radius: 2px;
+    padding: 5px;
+}
+
+.burger-line {
+    border-radius: 2px;
+    background-color: var(--nav-links-color);
+    height: 4px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.burger:hover .burger-line{
+    width: 110%;
+}
+/* ========= Navigation bar end ========= */
+
+
+.content {
+    padding: 10px;
+    grid-area: content;
     display: flex;
     flex-direction: column;
-    row-gap: 1em;
+    align-items: center;
+    justify-content: start;
+    max-width: 100%;
+    margin-bottom: 10px;
+}
+
+input[type=text], input[type=number], select {
+    height: 2em;
+    box-sizing: border-box;
+    border: 2px solid rgb(201, 200, 200);
+    border-radius: 0.5em;
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    font-size: 1.2em;
+    outline: none;
+    font-family: Consolas, Monaco, "Courier New", monospace;
+}
+
+.delete-icon {
+    width: 2em;
+    height: 2em;
+}
+
+.delete-icon:hover {
+    cursor: pointer;
+    animation: deleteIconShake .3s normal linear;
+}
+
+@keyframes deleteIconShake {
+    50% {
+        transform: rotate(15deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
 }
 
 /* Customize the label (the container) */
@@ -15,7 +159,6 @@
     display: block;
     position: relative;
     padding-left: 35px;
-    /* margin-bottom: 12px; */
     margin-top: auto;
     margin-bottom: auto;
     cursor: pointer;
@@ -26,7 +169,7 @@
     user-select: none;
     margin-right: 30px;
 }
-
+  
 /* Hide the browser's default checkbox */
 .container input {
     position: absolute;
@@ -38,13 +181,17 @@
   
 /* Create a custom checkbox */
 .checkmark-ckb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     top: 0;
     left: 0;
-    height: 25px;
-    width: 25px;
+    height: 1.2em;
+    width: 1.2em;
     background-color: #eee;
     border: 1px solid grey;
+    border-radius: 0.25em;
 }
   
 /* On mouse-over, add a grey background color */
@@ -68,19 +215,6 @@
 .container input:checked ~ .checkmark-ckb:after, .container input:checked ~ .checkmark-rad:after {
     display: block;
 }
-  
-/* Style the checkmark/indicator */
-.container .checkmark-ckb:after {
-    left: 8px;
-    top: 4px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-}
 
 
 /* Create a custom radio button */
@@ -103,9 +237,136 @@
     height: 8px;
     border-radius: 50%;
     background: white;
+} 
+
+
+.alert {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60%;
+    font-size: 20px;
+    height: 3em;
+    border-radius: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 7px;
+    text-align: center;
 }
 
-.delete-package-icon {
-    width: 2em;
+.alert-success { background-color: var(--success); }
+.alert-danger { background-color: var(--danger); }
+.alert-info { background-color: var(--info); }
+
+
+.orange-btn {
+    border: none;
+    border-bottom: 5px solid #C58143;
+    background-color: var(--orange);
+}
+
+.orange-btn:hover {
+    border-bottom: 3px solid #C58143;
+    top: 2px;
+}
+
+.big-btn {
+    height: 4rem;
+    width: 12rem;
+    font-size: 1.2rem;
+    padding: 10px;
+}
+
+.med-btn {
+    height: 3rem;
+    min-width: 9rem;
+    font-size: 1.2rem;
+    padding: 0.3em;
+    margin-top: 0.5rem;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.3em;
+    transition: all 0.2s ease;
+    position: relative;
+    top: 0;
+    left: 0;
+    color: var(--dark-blue);
     cursor: pointer;
+    text-align: center;
+}
+
+@media screen and (max-width: 1150px) {
+
+}
+
+
+@media screen and (max-width: 800px) {
+    nav {
+        background-color: var(--nav-bg-color);
+        background-image: none;
+    }
+
+    .nav-links a {
+        border: none;
+        height: 80px;    
+    }
+
+    .nav-links-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+
+    .nav-links {
+        position: absolute;
+        top: 0rem;
+        right: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        width: 50%;
+        transform: translateX(100%);
+        transition: transform 0.5s ease-in;
+        background-color: var(--nav-bg-color);
+        padding-top: 5rem;
+        margin: 0;
+    }
+    
+    .nav-links li {
+        opacity: 0;
+        height: 50px;
+    }
+
+    .burger {
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+        cursor: pointer;
+    }
+}
+
+.nav-active {
+    transform: translateX(0%);
+}
+
+/* Animation for navlinks */
+@keyframes navLinkFade {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0px);
+    }
 }

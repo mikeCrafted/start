@@ -75,9 +75,9 @@
                         <option>DateTime</option>
                         <option>Time</option>
                     </select>
-                    <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(authSys.userTableFields, field)">
+                    <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(authSys.userTableFields, field)">
                 </div>
-                <button @click="extendArrayByElement(authSys.userTableFields, {})" v-bind:disabled="!authSys.lastFieldFilled">Add Table Column</button>
+                <button @click="extendArrayByElement(authSys.userTableFields, {})" v-bind:disabled="!authSys.lastFieldFilled" class="btn med-btn orange-btn">Add Table Column</button>
                 The login view/route: <input type="text" v-bind:value="authSys.loginView" v-model="authSys.loginView" placeholder="Login route">
             </div>
         </div>
@@ -97,18 +97,18 @@
             <div v-for="(form, index) in wtForms.forms">
                 <span>Form Name</span>
                 <input type="text" v-model="form.name">
-                <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
+                <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
                     <div v-for="field in form.fields">
                         Field name: <input type="text" v-model="field.name">
                         <span v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
                             [[ validator ]], 
                         </span>
-                        <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
-                        <button @click="setValidators(field)">Set validators</button>
+                        <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
+                        <button @click="setValidators(field)" class="btn med-btn orange-btn">Set validators</button>
                     </div>
-                <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled">Add Field</button>
+                <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled" class="btn med-btn orange-btn">Add Field</button>
             </div>
-            <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })">Add Form</button>
+            <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" class="btn med-btn orange-btn">Add Form</button>
 
             Configure Validators
             <div v-for="validator in wtForms.validators">
@@ -122,7 +122,7 @@
                 <input v-if="validator.max != undefined" v-model="validator.max" type="number">
                 <br><br>
             </div>
-            <button @click="resetValidatorsConfiguration()">Reset Configuration</button>
+            <button @click="resetValidatorsConfiguration()" class="btn med-btn orange-btn">Reset Configuration</button>
         </div>
 
 
@@ -142,9 +142,9 @@
                     <span @click="extendArrayByElement(blueprint.forms, form.name, avoidDuplicates = true)" v-for="form in wtForms.forms">[[ form.name ]]</span>
                     <br>Selected Forms: <span v-for="form in blueprint.forms">[[ form ]],</span>
                 </div>
-                <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)">
+                <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)">
             </div>
-            <button @click="extendArrayByElement(blueprints.blueprintsList, { name: '', addForms: false, forms: [] })" v-bind:disabled="!blueprints.lastFieldFilled">Add Blueprint</button>
+            <button @click="extendArrayByElement(blueprints.blueprintsList, { name: '', addForms: false, forms: [] })" v-bind:disabled="!blueprints.lastFieldFilled" class="btn med-btn orange-btn">Add Blueprint</button>
         </div>
 
         <label class="container">Emails
@@ -164,11 +164,11 @@
             <option><=</option>
         </select>
         <input type="text" v-model="package.version">
-        <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(requirements, package)">
+        <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(requirements, package)">
     </div>
-    <button @click="extendArrayByElement(requirements, { name: '', version: '', type: '==' })">Add Package</button>
+    <button @click="extendArrayByElement(requirements, { name: '', version: '', type: '==' })" class="btn med-btn orange-btn">Add Package</button>
 
-    <button @click="sendData" type="button" v-bind:disabled="projectName == ''">Create</button>
+    <button @click="sendData" type="button" v-bind:disabled="projectName == ''" class="btn med-btn orange-btn">Create</button>
 
 
     <!-- <a href="{{ url_for('static', filename = 'main.css') }}" download>Download</a> -->
