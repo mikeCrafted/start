@@ -5,7 +5,6 @@
     #) add config file
     #) add environment vars
     #) change app creation
-    #) display available forms and create ui to add them to blueprint
 */
 
 var app = new Vue({
@@ -84,8 +83,11 @@ var app = new Vue({
         removeElementFromArray: function(array, element) {
             array.splice(array.indexOf(element), 1);
         },
-        extendArrayByElement: function(array, element) {
-            array.splice(array.length, 1, element);
+        extendArrayByElement: function(array, element, avoidDuplicates = false) {
+            if (avoidDuplicates) {
+                if (!array.includes(element)) array.splice(array.length, 1, element);
+            }
+            else array.splice(array.length, 1, element);
         },
         sendData: function() {
             fetch(`${window.origin}/create`, {

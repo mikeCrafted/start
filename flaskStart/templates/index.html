@@ -139,8 +139,8 @@
                     <span class="checkmark-ckb"></span>
                 </label>
                 <div v-if="blueprint.addForms">
-                    <span @click="extendArrayByElement(blueprint.forms, form.name)" v-for="form in wtForms.forms">[[ form.name ]]</span>
-                    [[ blueprint.forms ]]
+                    <span @click="extendArrayByElement(blueprint.forms, form.name, avoidDuplicates = true)" v-for="form in wtForms.forms">[[ form.name ]]</span>
+                    <br>Selected Forms: <span v-for="form in blueprint.forms">[[ form ]],</span>
                 </div>
                 <img class="delete-package-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)">
             </div>
