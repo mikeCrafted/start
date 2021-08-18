@@ -5,6 +5,7 @@
     #) add config file
     #) add environment vars
     #) change app creation
+    #) style buttons so that disabled mode is recognizeable!!!
 */
 
 var app = new Vue({
@@ -19,8 +20,8 @@ var app = new Vue({
             name: 'venv',
             params: [
                 { name: 'systemSitePackages', value: false },
-                { name: 'pip', value: true },
-                { name: 'clear', value: false }
+                { name: 'clear', value: false },
+                { name: 'pip', value: true }
             ],
         },
         requirements: [
