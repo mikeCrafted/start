@@ -49,10 +49,10 @@ var app = new Vue({
                     name: 'RegistrationForm',
                     lastFieldFilled: true,
                     fields: [
-                        { name: 'username', validators: [], type: 'StringField' },
-                        { name: 'email', validators: [], type: 'StringField' },
-                        { name: 'password', validators: [], type: 'PasswordField' },
-                        { name: 'confirm_password', validators: ["EqualTo('password')"], type: 'PasswordField' }
+                        { name: 'username', label: 'Username', validators: [], type: 'StringField' },
+                        { name: 'email', label: 'Email', validators: [], type: 'StringField' },
+                        { name: 'password', label: 'Password', validators: [], type: 'PasswordField' },
+                        { name: 'confirm_password', label: 'Confirm Password', validators: ["EqualTo('password')"], type: 'PasswordField' }
                     ] 
                 },
             ],

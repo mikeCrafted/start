@@ -2,7 +2,7 @@ from flask import render_template, request, make_response, jsonify
 import wtforms
 from flaskStart import app, SOURCES
 from venv import EnvBuilder
-import secrets, os
+import secrets, os, re
 
 @app.route('/')
 def index():
@@ -41,10 +41,10 @@ def create():
             f.write(f"{package['name']}{package['type']}{package['version']}\n")
     
     # get all forms
-    wtForms = req['wtForms']
-    if wtForms['show']:
+    if req['wtForms']['show']:
+        wtForms = req['wtForms']
         if wtForms['asMainFile']:
-            create_forms_main_file(wtForms)
+            create_forms_main_file(wtForms, project_dir)
         else:
             # generate a dict for each form to add in blueprint section, templated strings
             pass
@@ -77,5 +77,23 @@ def create_run_file(project_dir, project_name):
     with open(f'{project_dir}\\run.py', 'w') as f:
         f.write(data.replace('[[ project_name ]]', project_name))
 
-def create_forms_main_file(wtForms):
-    pass
+def create_forms_main_file(wtForms, project_dir):
+    with open(f'{SOURCES}\\forms.txt', 'r') as f:
+        data = f.read()
+    all_fields = []
+    all_validators = []
+    for form in wtForms['forms']:
+        data += f"class {form['name']}(FlaskForm):"
+        for field in form['fields']:
+            all_validators += field['validators']
+            all_fields.append(field['type'])
+            data += f"\n\t{field['name']} = {field['type']}('{field['label']}', validators = [{', '.join(field['validators'])}])"
+        data += '\n\n'  
+    # removing all duplicates using sets
+    all_fields = set(all_fields)
+    all_validators = set(all_validators)
+    data = data.replace('[[ field_types ]]', ', '.join(all_fields))
+    # using reg expressions to remove everything between parantheses on top of file when importing validators
+    data = data.replace('[[ validators ]]', re.sub(r"\([^()]*\)", "", ', '.join(all_validators)))
+    with open(f'{project_dir}\\forms.py', 'w') as f:
+        f.write(data)

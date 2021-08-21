@@ -105,6 +105,7 @@
                 <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
                     <div v-for="field in form.fields">
                         Field name: <input type="text" v-model="field.name">
+                        Field label: <input type="text" v-model="field.label">
                         <select v-model="field.type">
                             <option>StringField</option>
                             <option>PasswordField</option>
