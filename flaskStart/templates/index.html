@@ -52,20 +52,20 @@
                     <span>Type</span>
                 </div>
                 <div v-for="field in authSys.userTableFields">
-                    <input type="text" v-bind:value="field.name" v-model="field.name">
-                    <select v-model="field.pk" v-bind:value="field.pk">
+                    <input type="text" v-model="field.name">
+                    <select v-model="field.pk">
                         <option>true</option>
                         <option>false</option>
                     </select>
-                    <select v-model="field.nullable" v-bind:value="field.nullable">
+                    <select v-model="field.nullable">
                         <option>true</option>
                         <option>false</option>
                     </select>
-                    <select v-model="field.unique" v-bind:value="field.unique">
+                    <select v-model="field.unique">
                         <option>true</option>
                         <option>false</option>
                     </select>
-                    <select v-model="field.type" v-bind:value="field.type">
+                    <select v-model="field.type">
                         <option>Integer</option>
                         <option>Float</option>
                         <option>String</option>
@@ -94,12 +94,35 @@
                 <option>false</option>
             </select>
             
+            <label class="container">Use Main Forms File
+                <input v-model="wtForms.asMainFile" @click="wtForms.asMainFile = !wtForms.asMainFile" type="checkbox">
+                <span class="checkmark-ckb"></span>
+            </label>
+
             <div v-for="(form, index) in wtForms.forms">
                 <span>Form Name</span>
                 <input type="text" v-model="form.name">
                 <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
                     <div v-for="field in form.fields">
                         Field name: <input type="text" v-model="field.name">
+                        <select v-model="field.type">
+                            <option>StringField</option>
+                            <option>PasswordField</option>
+                            <option>SubmitField</option>
+                            <option>BooleanField</option>
+                            <option>TextAreaField</option>
+                            <option>IntegerField</option>
+                            <option>SelectField</option>
+                            <option>FileField</option>
+                            <option>DateField</option>
+                            <option>DateTimeField</option>
+                            <option>DecimalField</option>
+                            <option>MultipleFileField</option>
+                            <option>FloatField</option>
+                            <option>RadioField</option>
+                            <option>SelectMultipleField</option>
+                            <option>HiddenField</option>
+                        </select>
                         <span v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
                             [[ validator ]], 
                         </span>
@@ -138,7 +161,7 @@
                     <input v-model="blueprint.addForms" @click="blueprint.addForms = !blueprint.addForms" type="checkbox">
                     <span class="checkmark-ckb"></span>
                 </label>
-                <div v-if="blueprint.addForms">
+                <div v-if="blueprint.addForms && wtForms.show">
                     <span @click="extendArrayByElement(blueprint.forms, form.name, avoidDuplicates = true)" v-for="form in wtForms.forms">[[ form.name ]]</span>
                     <br>Selected Forms: <span v-for="form in blueprint.forms">[[ form ]],</span>
                 </div>

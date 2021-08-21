@@ -259,6 +259,11 @@ input[type=text], input[type=number], select {
 .alert-info { background-color: var(--info); }
 
 
+button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+}
+
 .orange-btn {
     border: none;
     border-bottom: 5px solid #C58143;

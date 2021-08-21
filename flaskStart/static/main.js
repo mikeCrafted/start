@@ -5,7 +5,6 @@
     #) add config file
     #) add environment vars
     #) change app creation
-    #) style buttons so that disabled mode is recognizeable!!!
 */
 
 var app = new Vue({
@@ -42,6 +41,7 @@ var app = new Vue({
         wtForms: {
             show: false,
             useCsrf: true,
+            asMainFile: true,
             forms: [
                 { 
                     // https://github.com/CoreyMSchafer/code_snippets/blob/master/Python/Flask_Blog/03-Forms-and-Validation/forms.py
@@ -49,10 +49,10 @@ var app = new Vue({
                     name: 'RegistrationForm',
                     lastFieldFilled: true,
                     fields: [
-                        { name: 'username', validators: [] },
-                        { name: 'email', validators: [] },
-                        { name: 'password', validators: [] },
-                        { name: 'confirm_password', validators: ["EqualTo('password')"] }
+                        { name: 'username', validators: [], type: 'StringField' },
+                        { name: 'email', validators: [], type: 'StringField' },
+                        { name: 'password', validators: [], type: 'PasswordField' },
+                        { name: 'confirm_password', validators: ["EqualTo('password')"], type: 'PasswordField' }
                     ] 
                 },
             ],

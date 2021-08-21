@@ -1,4 +1,5 @@
 from flask import render_template, request, make_response, jsonify
+import wtforms
 from flaskStart import app, SOURCES
 from venv import EnvBuilder
 import secrets, os
@@ -39,6 +40,15 @@ def create():
         for package in req['requirements']:
             f.write(f"{package['name']}{package['type']}{package['version']}\n")
     
+    # get all forms
+    wtForms = req['wtForms']
+    if wtForms['show']:
+        if wtForms['asMainFile']:
+            create_forms_main_file(wtForms)
+        else:
+            # generate a dict for each form to add in blueprint section, templated strings
+            pass
+
     if req['blueprints']['show']:
         create_blueprints(req['blueprints'], project_dir)
     return make_response(jsonify('ok'), 200)
@@ -55,14 +65,17 @@ def create_virt_env(name, use_system_site_packages, use_clear, use_with_pip, tar
     my_env_builder.create(f'{target_dir}\\{name}')
 
 def create_blueprints(blueprintsDict, project_dir):
-    pass
+    print(blueprintsDict)
+
     # create folder for each blueprint with routes and __init__ inside
     # register blueprint: admin_func = Blueprint('admin_func', __name__)
     # in global __init__: from minecratica.users_func.routes import users_func, and register blueprint: app.register_blueprint(users_func)
-
 
 def create_run_file(project_dir, project_name):
     with open(f'{SOURCES}\\run.txt', 'r') as f:
         data = f.read()
     with open(f'{project_dir}\\run.py', 'w') as f:
         f.write(data.replace('[[ project_name ]]', project_name))
+
+def create_forms_main_file(wtForms):
+    pass
