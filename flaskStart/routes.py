@@ -1,5 +1,4 @@
 from flask import render_template, request, make_response, jsonify
-import wtforms
 from flaskStart import app, SOURCES
 from venv import EnvBuilder
 import secrets, os, re
@@ -11,7 +10,6 @@ def index():
 @app.route('/create', methods = ['POST'])
 def create():
     req = request.get_json()
-    print(req)
     
     temp_dir = f"{app.root_path}\\generated\\{secrets.token_hex(16)}"
     project_dir = f"{temp_dir}\\{req['projectName']}"
@@ -23,9 +21,18 @@ def create():
     # creating run.py file
     create_run_file(project_dir, req['projectName'])
     
+    # creating requirements file
+    with open(f'{project_dir}\\requirements.txt', 'w') as f:
+        for package in req['requirements']:
+            f.write(f"{package['name']}{package['type']}{package['version']}\n")
+
     # second level project folder for routes, blueprints etc.
-    os.mkdir(f"{project_dir}\\{req['projectName']}")
+    project_dir = f"{project_dir}\\{req['projectName']}"
+    os.mkdir(project_dir)
     
+    # create main __init__ file
+    create_init_file(req, project_dir)
+
     # creating virtual environment
     if req['virtEnv']['show'] == True:
         virt_env_data = req['virtEnv']
@@ -35,22 +42,14 @@ def create():
                         use_with_pip = virt_env_data['params'][2],
                         target_dir = project_dir)
     
-    # creating requirements file
-    with open(f'{project_dir}\\requirements.txt', 'w') as f:
-        for package in req['requirements']:
-            f.write(f"{package['name']}{package['type']}{package['version']}\n")
-    
     # get all forms
     if req['wtForms']['show']:
         wtForms = req['wtForms']
         if wtForms['asMainFile']:
-            create_forms_main_file(wtForms, project_dir)
-        else:
-            # generate a dict for each form to add in blueprint section, templated strings
-            pass
+            create_forms_file(wtForms['forms'], project_dir)
 
     if req['blueprints']['show']:
-        create_blueprints(req['blueprints'], project_dir)
+        create_blueprints(req['blueprints'], req['wtForms'], project_dir, req['projectName'])
     return make_response(jsonify('ok'), 200)
 
 # DB
@@ -64,12 +63,25 @@ def create_virt_env(name, use_system_site_packages, use_clear, use_with_pip, tar
                                 clear = use_clear, with_pip = use_with_pip)
     my_env_builder.create(f'{target_dir}\\{name}')
 
-def create_blueprints(blueprintsDict, project_dir):
-    print(blueprintsDict)
-
-    # create folder for each blueprint with routes and __init__ inside
-    # register blueprint: admin_func = Blueprint('admin_func', __name__)
-    # in global __init__: from minecratica.users_func.routes import users_func, and register blueprint: app.register_blueprint(users_func)
+def create_blueprints(blueprintsDict, wtForms, project_dir, project_name):
+    for_main_init = ''
+    for blueprint in blueprintsDict['blueprintsList']:
+        os.mkdir(f"{project_dir}\\{blueprint['name']}")
+        with open(f"{project_dir}\\{blueprint['name']}\\__init__.py", 'w'): pass
+        data = f"from {project_name} import app\n" 
+        data += "from flask import Blueprint, render_template, url_for, redirect\n\n"
+        data += f"{blueprint['name']} = Blueprint('{blueprint['name']}', __name__)\n"
+        data += f"# Use @{blueprint['name']}.route()"
+        with open(f"{project_dir}\\{blueprint['name']}\\routes.py", 'w') as f:
+            f.write(data)
+        for_main_init += f"from {project_name}.{blueprint['name']}.routes import {blueprint['name']}\n"
+        for_main_init += f"app.register_blueprint({blueprint['name']})\n"
+        if blueprint['addForms']:
+            create_forms_file([form for form in wtForms['forms'] if form['name'] in blueprint['forms']], f"{project_dir}\\{blueprint['name']}")
+    with open(f"{project_dir}\\__init__.py", 'r') as f:
+        init_data = f.read()
+    with open(f"{project_dir}\\__init__.py", 'w') as f:
+        f.write(init_data.replace('[[ blueprint_section ]]', for_main_init))
 
 def create_run_file(project_dir, project_name):
     with open(f'{SOURCES}\\run.txt', 'r') as f:
@@ -77,12 +89,12 @@ def create_run_file(project_dir, project_name):
     with open(f'{project_dir}\\run.py', 'w') as f:
         f.write(data.replace('[[ project_name ]]', project_name))
 
-def create_forms_main_file(wtForms, project_dir):
+def create_forms_file(forms_list, form_file_dir):
     with open(f'{SOURCES}\\forms.txt', 'r') as f:
         data = f.read()
     all_fields = []
     all_validators = []
-    for form in wtForms['forms']:
+    for form in forms_list:
         data += f"class {form['name']}(FlaskForm):"
         for field in form['fields']:
             all_validators += field['validators']
@@ -95,5 +107,15 @@ def create_forms_main_file(wtForms, project_dir):
     data = data.replace('[[ field_types ]]', ', '.join(all_fields))
     # using reg expressions to remove everything between parantheses on top of file when importing validators
     data = data.replace('[[ validators ]]', re.sub(r"\([^()]*\)", "", ', '.join(all_validators)))
-    with open(f'{project_dir}\\forms.py', 'w') as f:
+    with open(f'{form_file_dir}\\forms.py', 'w') as f:
+        f.write(data)
+
+def create_init_file(req, project_dir):
+    with open(f'{SOURCES}\\init.txt', 'r') as f:
+        data = f.read()
+    if not req['blueprints']['show']:
+        data = data.replace('[[ blueprint_section ]]', '')
+    data = data.replace('[[ secret_key ]]', secrets.token_hex(16))
+    data = data.replace('[[ project_name ]]', req['projectName'])
+    with open(f"{project_dir}\\__init__.py", 'w') as f:
         f.write(data)

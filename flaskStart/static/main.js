@@ -5,6 +5,7 @@
     #) add config file
     #) add environment vars
     #) change app creation
+    #) when user selects create main forms file the option to add seperate forms files for blueprints should be disabled
 */
 
 var app = new Vue({
