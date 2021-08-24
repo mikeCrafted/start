@@ -127,7 +127,22 @@ def create_init_file(req, project_dir):
     # setting up database if selected
     db_config = "app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'\n"
     db_config += "db = SQLAlchemy(app)"
+    if req['addAuthSys']:
+        db_config += "\nbcrypt = Bcrypt(app)"
+        # setting up loginManager
+        login_config = "login_manager = LoginManager(app)\n"
+        login_config += f"login_manager.login_view = '{req['authSys']['loginView']}'\n"
+        login_config += "login_manager.login_message_category = 'info'"
+        data = data.replace('[[ login_config ]]', login_config)
     data = data.replace('[[ db_config ]]', db_config)
+    # setting up email
+    email_config  = "app.config['MAIL_SERVER'] = ''          # for example 'smtp.gmail.com'\n"
+    email_config += "app.config['MAIL_PORT'] = ''            # for example 587\n"
+    email_config += "app.config['MAIL_USE_TLS'] = True\n"
+    email_config += "app.config['MAIL_USERNAME'] = ''        # your mail username\n"
+    email_config += "app.config['MAIL_PASSWORD'] = ''        # Don't set your password here as string, use environment variables"
+    email_config += "mail = Mail(app)\n"
+    data = data.replace('[[ email_config ]]', email_config)
     with open(f"{project_dir}\\__init__.py", 'w') as f:
         f.write(data)
 
@@ -156,6 +171,7 @@ def get_imports(req, destination):
     if req['addAuthSys']:
         if destination == 'init':
             imports += "from flask_bcrypt import Bcrypt\n"
+            imports += "from flask_login import LoginManager\n"
         else:
             imports += ', bcrypt'
     if req['emails']['show']:

@@ -6,4 +6,8 @@ app.config['SECRET_KEY'] = '[[ secret_key ]]'       # use environment var in pro
 
 [[ db_config ]]
 
+[[ login_config ]]
+
+[[ email_config ]]
+
 [[ blueprint_section ]]
