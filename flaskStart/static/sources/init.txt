@@ -4,5 +4,3 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '[[ secret_key ]]'       # use environment var in production
 
 [[ blueprint_section ]]
-
-from [[ project_name ]] import routes

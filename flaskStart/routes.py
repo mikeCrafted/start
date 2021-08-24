@@ -30,6 +30,9 @@ def create():
     project_dir = f"{project_dir}\\{req['projectName']}"
     os.mkdir(project_dir)
     
+    # create templates folder
+    os.mkdir(f"{project_dir}\\templates")
+
     # create main __init__ file
     create_init_file(req, project_dir)
 
@@ -50,6 +53,9 @@ def create():
 
     if req['blueprints']['show']:
         create_blueprints(req['blueprints'], req['wtForms'], project_dir, req['projectName'])
+    else:
+        # create main routes file
+        create_routes_file(req, project_dir)
     return make_response(jsonify('ok'), 200)
 
 # DB
@@ -69,7 +75,7 @@ def create_blueprints(blueprintsDict, wtForms, project_dir, project_name):
         os.mkdir(f"{project_dir}\\{blueprint['name']}")
         with open(f"{project_dir}\\{blueprint['name']}\\__init__.py", 'w'): pass
         data = f"from {project_name} import app\n" 
-        data += "from flask import Blueprint, render_template, url_for, redirect\n\n"
+        data += "from flask import Blueprint, render_template, url_for, redirect, request\n\n"
         data += f"{blueprint['name']} = Blueprint('{blueprint['name']}', __name__)\n"
         data += f"# Use @{blueprint['name']}.route()"
         with open(f"{project_dir}\\{blueprint['name']}\\routes.py", 'w') as f:
@@ -114,8 +120,15 @@ def create_init_file(req, project_dir):
     with open(f'{SOURCES}\\init.txt', 'r') as f:
         data = f.read()
     if not req['blueprints']['show']:
-        data = data.replace('[[ blueprint_section ]]', '')
+        data = data.replace('[[ blueprint_section ]]', f"from {req['projectName']} import routes")
     data = data.replace('[[ secret_key ]]', secrets.token_hex(16))
-    data = data.replace('[[ project_name ]]', req['projectName'])
     with open(f"{project_dir}\\__init__.py", 'w') as f:
         f.write(data)
+
+def create_routes_file(req, project_dir):
+    data = f"from {req['projectName']} import app\n"
+    data += "from flask import request, render_template, url_for, redirect\n"
+    with open(f'{project_dir}\\routes.py', 'w') as f:
+        f.write(data)
+
+
