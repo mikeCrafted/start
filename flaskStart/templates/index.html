@@ -172,11 +172,11 @@
         </div>
 
         <label class="container">Emails
-            <input v-model="emails" @click="emails = !emails" type="checkbox">
+            <input v-model="emails.show" @click="emails.show = !emails.show" type="checkbox">
             <span class="checkmark-ckb"></span>
         </label>
 
-        <div v-if="emails">Emails</div>
+        <div v-if="emails.show">Emails</div>
     </div>
     
     <h2>Requirements</h2>

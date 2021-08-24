@@ -1,6 +1,9 @@
 from flask import Flask
+[[ imports ]]
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '[[ secret_key ]]'       # use environment var in production
+
+[[ db_config ]]
 
 [[ blueprint_section ]]

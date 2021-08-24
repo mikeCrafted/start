@@ -6,6 +6,7 @@
     #) add environment vars
     #) change app creation
     #) when user selects create main forms file the option to add seperate forms files for blueprints should be disabled
+    #) adding custom tables, not just User
 */
 
 var app = new Vue({
@@ -72,7 +73,9 @@ var app = new Vue({
             ],
             selectedValidators: [],
         },
-        emails: false,
+        emails: {
+            show: false
+        },
         blueprints: {
             show: false,
             lastFieldFilled: true,
@@ -167,8 +170,8 @@ var app = new Vue({
                     this.extendArrayByElement(this.wtForms.forms, { 
                         name: 'LoginForm', 
                         fields: [
-                            { name: 'email', validators: [] },
-                            { name: 'password', validators: [] },
+                            { name: 'email', label: 'Email', validators: ['DataRequired()'], type: 'StringField' },
+                            { name: 'password', label: 'Password', validators: ['DataRequired()'], type: 'PasswordField' },
                         ]  
                     });
                 }

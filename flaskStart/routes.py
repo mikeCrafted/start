@@ -122,13 +122,47 @@ def create_init_file(req, project_dir):
     if not req['blueprints']['show']:
         data = data.replace('[[ blueprint_section ]]', f"from {req['projectName']} import routes")
     data = data.replace('[[ secret_key ]]', secrets.token_hex(16))
+    # getting all necessary imports
+    data = data.replace('[[ imports ]]', get_imports(req, 'init'))
+    # setting up database if selected
+    db_config = "app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'\n"
+    db_config += "db = SQLAlchemy(app)"
+    data = data.replace('[[ db_config ]]', db_config)
     with open(f"{project_dir}\\__init__.py", 'w') as f:
         f.write(data)
 
 def create_routes_file(req, project_dir):
-    data = f"from {req['projectName']} import app\n"
+    data = f"from {req['projectName']} import app{get_imports(req, 'routes')}\n"
     data += "from flask import request, render_template, url_for, redirect\n"
+    if req['emails']['show']:
+        data += "from flask_mail import Message"
+    # import models
+    if req['addAuthSys']: 
+        data += f"from {req['projectName']}.models import {req['authSys']['userTableName']}\n"
+    # import forms
+    if req['wtForms']['show']:
+        data += f"from {req['projectName']}.forms import {', '.join([form['name'] for form in req['wtForms']['forms']])}\n"
     with open(f'{project_dir}\\routes.py', 'w') as f:
         f.write(data)
+
+# helper function to return all imports needed for __init__ or routes file based on user selection
+def get_imports(req, destination):
+    imports = ""
+    if req['addDatabase']:
+        if destination == 'init':
+            imports += "from flask_sqlalchemy import SQLAlchemy\n"
+        else:
+            imports += ', db'
+    if req['addAuthSys']:
+        if destination == 'init':
+            imports += "from flask_bcrypt import Bcrypt\n"
+        else:
+            imports += ', bcrypt'
+    if req['emails']['show']:
+        if destination == 'init':
+            imports += "from flask_mail import Mail"
+        else:
+            imports += ', mail'
+    return imports
 
 
