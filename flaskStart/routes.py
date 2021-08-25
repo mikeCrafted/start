@@ -54,8 +54,10 @@ def create():
     if req['blueprints']['show']:
         create_blueprints(req['blueprints'], req['wtForms'], project_dir, req['projectName'])
     else:
-        # create main routes file
         create_routes_file(req, project_dir)
+    
+    if req['addAuthSys']:
+        create_models_file(req, project_dir)
     return make_response(jsonify('ok'), 200)
 
 # DB
@@ -180,5 +182,17 @@ def get_imports(req, destination):
         else:
             imports += ', mail'
     return imports
+
+def create_models_file(req, project_dir):
+    data = f"from {req['projectName']} import db, login_manager\n"
+    data += "from flask_login import UserMixin\n\n"
+    data += "@login_manager.user_loader\n"
+    data += "def load_user(user_id):\n\t"
+    data += f"return {req['authSys']['userTableName']}.query.get(int(user_id))\n\n"
+    data += f"class {req['authSys']['userTableName']}(db.Model, UserMixin):\n"
+    for field in req['authSys']['userTableFields']:
+        data += f"\t{field['name']} = db.Column(db.{field['type']}, primary_key = {field['pk']}, nullable = {field['nullable']}, unique = {field['unique']})\n"
+    with open(f'{project_dir}\\models.py', 'w') as f:
+        f.write(data)
 
 

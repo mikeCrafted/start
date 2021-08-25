@@ -3,7 +3,6 @@
     #) get package verions either from pip website or use api
     #) add github
     #) add config file
-    #) add environment vars
     #) change app creation
     #) when user selects create main forms file the option to add seperate forms files for blueprints should be disabled
     #) adding custom tables, not just User
