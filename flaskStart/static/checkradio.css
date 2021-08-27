@@ -1,0 +1,82 @@
+/* Customize the label (the container) */
+.container {
+    position: relative;
+    padding-left: 35px;
+    margin-top: auto;
+    margin-bottom: auto;
+    cursor: pointer;
+    font-size: 1.2em;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+  
+/* Hide the browser's default checkbox */
+.container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+  
+/* Create a custom checkbox */
+.checkmark-ckb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 1.2em;
+    width: 1.2em;
+    background-color: #eee;
+    border: 1px solid grey;
+    border-radius: 0.25em;
+}
+  
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark-ckb, .container:hover input ~ .checkmark-rad {
+    background-color: #ccc;
+}
+  
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark-ckb, .container input:checked ~ .checkmark-rad {
+    background-color: #2196F3;
+}
+  
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark-ckb:after, .checkmark-rad:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+  
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark-ckb:after, .container input:checked ~ .checkmark-rad:after {
+    display: block;
+}
+
+
+/* Create a custom radio button */
+.checkmark-rad {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    border-radius: 50%;
+    border: 1px solid grey;
+}
+
+/* Style the indicator (dot/circle) */
+.container .checkmark-rad:after {
+    top: 8px;
+    left: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+} 

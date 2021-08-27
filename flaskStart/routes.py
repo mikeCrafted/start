@@ -142,7 +142,7 @@ def create_init_file(req, project_dir):
     email_config += "app.config['MAIL_PORT'] = ''            # for example 587\n"
     email_config += "app.config['MAIL_USE_TLS'] = True\n"
     email_config += "app.config['MAIL_USERNAME'] = ''        # your mail username\n"
-    email_config += "app.config['MAIL_PASSWORD'] = ''        # Don't set your password here as string, use environment variables"
+    email_config += "app.config['MAIL_PASSWORD'] = ''        # Don't set your password here as string, use environment variables\n"
     email_config += "mail = Mail(app)\n"
     data = data.replace('[[ email_config ]]', email_config)
     with open(f"{project_dir}\\__init__.py", 'w') as f:
@@ -152,7 +152,7 @@ def create_routes_file(req, project_dir):
     data = f"from {req['projectName']} import app{get_imports(req, 'routes')}\n"
     data += "from flask import request, render_template, url_for, redirect\n"
     if req['emails']['show']:
-        data += "from flask_mail import Message"
+        data += "from flask_mail import Message\n"
     # import models
     if req['addAuthSys']: 
         data += f"from {req['projectName']}.models import {req['authSys']['userTableName']}\n"

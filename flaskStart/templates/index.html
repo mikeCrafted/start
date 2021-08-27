@@ -1,183 +1,219 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    
-    <h1 v-if="projectName == ''">Generate Flask project template</h1>
-    <h1 v-else>Generate [[ projectName ]]</h1>
+    <section class="project-name-section">
+        <h1 v-if="projectName == ''">Generate Flask project template</h1>
+        <h1 v-else>Generate [[ projectName ]]</h1>
+        <input v-model="projectName" type="text" placeholder="Project name">
+    </section>
 
-    <input v-model="projectName" type="text" placeholder="Project name">
-    
-    <div class="form-checkbox-container">
-        <label class="container">Create Virtual Enironment
-            <input v-model="virtEnv.show" @click="virtEnv.show = !virtEnv.show" type="checkbox">
-            <span class="checkmark-ckb"></span>
-        </label>
 
-        <div v-if="virtEnv.show">Create Virtual Enironment
-            <input type="text" v-model="virtEnv.name" v-bind:value="virtEnv.name">
-            <div v-for="param in virtEnv.params">
-                <span>[[ param.name ]]</span>
-                <select v-model="param.value" v-bind:value="param.value">
+    <section class="settings-section">
+        <div class="settings-ckb">
+            <label class="container">Create Virtual Enironment
+                <input v-model="virtEnv.show" @click="virtEnv.show = !virtEnv.show" type="checkbox">
+                <span class="checkmark-ckb"></span>
+            </label>
+            <label class="container">Add Database
+                <input v-model="addDatabase" @click="addDatabase = !addDatabase; addAuthSys = false" type="checkbox">
+                <span class="checkmark-ckb"></span>
+            </label>
+            <label class="container">Use WT Forms
+                <input v-model="wtForms.show" @click="wtForms.show = !wtForms.show" type="checkbox">
+                <span class="checkmark-ckb"></span>
+            </label>
+            <label class="container">Use Blueprints
+                <input v-model="blueprints.show" @click="blueprints.show = !blueprints.show" type="checkbox">
+                <span class="checkmark-ckb"></span>
+            </label>
+            <label class="container">Emails
+                <input v-model="emails.show" @click="emails.show = !emails.show" type="checkbox">
+                <span class="checkmark-ckb"></span>
+            </label>
+        </div>
+
+        <transition name="fade">
+            <div class="virt-env" v-if="virtEnv.show">
+                <h2 class="mt-1">Create Virtual Enironment</h2>
+                <span class="text">Name:&nbsp;</span><input type="text" v-model="virtEnv.name" v-bind:value="virtEnv.name">
+                <h2 class="mt-1">Parameters</h2>
+                <div class="virt-env-params" v-for="param in virtEnv.params">
+                    <span class="text">[[ param.name ]]</span>
+                    <select v-model="param.value" v-bind:value="param.value">
+                        <option>true</option>
+                        <option>false</option>
+                    </select>
+                </div>
+            </div>
+        </transition>
+
+        <transition name="fade">
+            <div v-if="addDatabase">
+                <span class="text">Chose Database:&nbsp;</span>
+                <select v-model="dbType">
+                    <option>SQL Lite</option>
+                    <option>MySQL</option>
+                </select>
+                
+                <div class="mt-1 mb-1">
+                    <label v-if="dbType" class="container">Add Authentication system
+                        <input v-model="addAuthSys" @click="addAuthSys = !addAuthSys" type="checkbox">
+                        <span class="checkmark-ckb"></span>
+                    </label>
+                </div>
+                
+                <transition name="fade">
+                    <div v-if="addAuthSys">
+                        <span class="text">User Table Name:&nbsp;</span>
+                        <input type="text" v-model="authSys.userTableName" v-bind="authSys.userTableName">
+                        <!--Generate User Table fields-->
+                        <div class="db-table-container">
+                            <table class="db-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Primary key</th>
+                                        <th>Nullable</th>
+                                        <th>Unique</th>
+                                        <th>Type</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="">
+                                    <tr v-for="field in authSys.userTableFields">
+                                        <td><input type="text" v-model="field.name"></td>
+                                        <td>
+                                            <select v-model="field.pk">
+                                                <option>true</option>
+                                                <option>false</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select v-model="field.nullable">
+                                                <option>true</option>
+                                                <option>false</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select v-model="field.unique">
+                                                <option>true</option>
+                                                <option>false</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select v-model="field.type">
+                                                <option>Integer</option>
+                                                <option>Float</option>
+                                                <option>String</option>
+                                                <option>Text</option>
+                                                <option>Boolean</option>
+                                                <option>Date</option>
+                                                <option>DateTime</option>
+                                                <option>Time</option>
+                                            </select>
+                                        </td>
+                                        <td class="center">
+                                            <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(authSys.userTableFields, field)">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <button @click="extendArrayByElement(authSys.userTableFields, {})" v-bind:disabled="!authSys.lastFieldFilled" class="btn med-btn orange-btn">Add Table Column</button>
+                        <span class="text">The login view/route:&nbsp;</span>
+                        <input type="text" v-bind:value="authSys.loginView" v-model="authSys.loginView" placeholder="Login route">
+                    </div>
+                </transition>
+            </div>
+        </transition>
+
+        <transition name="fade">
+            <div v-if="wtForms.show">WT Forms
+                <span>Use CSRF Token</span>
+                <select v-model="wtForms.useCsrf">
                     <option>true</option>
                     <option>false</option>
                 </select>
-            </div>
-        </div>
-        
-        <label class="container">Add Database
-            <input v-model="addDatabase" @click="addDatabase = !addDatabase; addAuthSys = false" type="checkbox">
-            <span class="checkmark-ckb"></span>
-        </label>
+                
+                <label class="container">Use Main Forms File
+                    <input v-model="wtForms.asMainFile" @click="wtForms.asMainFile = !wtForms.asMainFile" type="checkbox">
+                    <span class="checkmark-ckb"></span>
+                </label>
 
-        <div v-if="addDatabase">
-            Chose Database
-            <select v-model="dbType">
-                <option>SQL Lite</option>
-                <option>MySQL</option>
-            </select>
-
-            <label v-if="dbType" class="container">Add Authentication system
-                <input v-model="addAuthSys" @click="addAuthSys = !addAuthSys" type="checkbox">
-                <span class="checkmark-ckb"></span>
-            </label>
-    
-            <div v-if="addAuthSys">
-                User Table Name: <input type="text" v-model="authSys.userTableName" v-bind="authSys.userTableName">
-                <!--Generate User Table fields-->
-                <div class="authTabelHeader">
-                    <span>Name</span>
-                    <span>Primary key</span>
-                    <span>Nullable</span>
-                    <span>Unique</span>
-                    <span>Type</span>
+                <div v-for="(form, index) in wtForms.forms">
+                    <span>Form Name</span>
+                    <input type="text" v-model="form.name">
+                    <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
+                        <div v-for="field in form.fields">
+                            Field name: <input type="text" v-model="field.name">
+                            Field label: <input type="text" v-model="field.label">
+                            <select v-model="field.type">
+                                <option>StringField</option>
+                                <option>PasswordField</option>
+                                <option>SubmitField</option>
+                                <option>BooleanField</option>
+                                <option>TextAreaField</option>
+                                <option>IntegerField</option>
+                                <option>SelectField</option>
+                                <option>FileField</option>
+                                <option>DateField</option>
+                                <option>DateTimeField</option>
+                                <option>DecimalField</option>
+                                <option>MultipleFileField</option>
+                                <option>FloatField</option>
+                                <option>RadioField</option>
+                                <option>SelectMultipleField</option>
+                                <option>HiddenField</option>
+                            </select>
+                            <span v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
+                                [[ validator ]], 
+                            </span>
+                            <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
+                            <button @click="setValidators(field)" class="btn med-btn orange-btn">Set validators</button>
+                        </div>
+                    <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled" class="btn med-btn orange-btn">Add Field</button>
                 </div>
-                <div v-for="field in authSys.userTableFields">
-                    <input type="text" v-model="field.name">
-                    <select v-model="field.pk">
-                        <option>true</option>
-                        <option>false</option>
-                    </select>
-                    <select v-model="field.nullable">
-                        <option>true</option>
-                        <option>false</option>
-                    </select>
-                    <select v-model="field.unique">
-                        <option>true</option>
-                        <option>false</option>
-                    </select>
-                    <select v-model="field.type">
-                        <option>Integer</option>
-                        <option>Float</option>
-                        <option>String</option>
-                        <option>Text</option>
-                        <option>Boolean</option>
-                        <option>Date</option>
-                        <option>DateTime</option>
-                        <option>Time</option>
-                    </select>
-                    <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(authSys.userTableFields, field)">
+                <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" class="btn med-btn orange-btn">Add Form</button>
+
+                Configure Validators
+                <div v-for="validator in wtForms.validators">
+                    <label class="container">
+                        [[ validator.name ]]
+                        <input v-model="validator.use" v-bind="validator.use" @click="updateSelectedValidators(validator)" type="checkbox">
+                        <span class="checkmark-ckb"></span>
+                    </label>
+                    <input v-if="validator.param != undefined" v-model="validator.param" type="text">
+                    <input v-if="validator.min != undefined" v-model="validator.min" type="number">
+                    <input v-if="validator.max != undefined" v-model="validator.max" type="number">
+                    <br><br>
                 </div>
-                <button @click="extendArrayByElement(authSys.userTableFields, {})" v-bind:disabled="!authSys.lastFieldFilled" class="btn med-btn orange-btn">Add Table Column</button>
-                The login view/route: <input type="text" v-bind:value="authSys.loginView" v-model="authSys.loginView" placeholder="Login route">
+                <button @click="resetValidatorsConfiguration()" class="btn med-btn orange-btn">Reset Configuration</button>
             </div>
-        </div>
+        </transition>
 
-        <label class="container">Use WT Forms
-            <input v-model="wtForms.show" @click="wtForms.show = !wtForms.show" type="checkbox">
-            <span class="checkmark-ckb"></span>
-        </label>
-
-        <div v-if="wtForms.show">WT Forms
-            <span>Use CSRF Token</span>
-            <select v-model="wtForms.useCsrf">
-                <option>true</option>
-                <option>false</option>
-            </select>
-            
-            <label class="container">Use Main Forms File
-                <input v-model="wtForms.asMainFile" @click="wtForms.asMainFile = !wtForms.asMainFile" type="checkbox">
-                <span class="checkmark-ckb"></span>
-            </label>
-
-            <div v-for="(form, index) in wtForms.forms">
-                <span>Form Name</span>
-                <input type="text" v-model="form.name">
-                <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
-                    <div v-for="field in form.fields">
-                        Field name: <input type="text" v-model="field.name">
-                        Field label: <input type="text" v-model="field.label">
-                        <select v-model="field.type">
-                            <option>StringField</option>
-                            <option>PasswordField</option>
-                            <option>SubmitField</option>
-                            <option>BooleanField</option>
-                            <option>TextAreaField</option>
-                            <option>IntegerField</option>
-                            <option>SelectField</option>
-                            <option>FileField</option>
-                            <option>DateField</option>
-                            <option>DateTimeField</option>
-                            <option>DecimalField</option>
-                            <option>MultipleFileField</option>
-                            <option>FloatField</option>
-                            <option>RadioField</option>
-                            <option>SelectMultipleField</option>
-                            <option>HiddenField</option>
-                        </select>
-                        <span v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
-                            [[ validator ]], 
-                        </span>
-                        <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
-                        <button @click="setValidators(field)" class="btn med-btn orange-btn">Set validators</button>
+        <transition name="fade">
+            <div v-if="blueprints.show">Blueprints
+                <div v-for="blueprint in blueprints.blueprintsList">
+                    <input type="text" v-model="blueprint.name">
+                    <label class="container">Create Forms File
+                        <input v-model="blueprint.addForms" @click="blueprint.addForms = !blueprint.addForms" type="checkbox">
+                        <span class="checkmark-ckb"></span>
+                    </label>
+                    <div v-if="blueprint.addForms && wtForms.show">
+                        <span @click="extendArrayByElement(blueprint.forms, form.name, avoidDuplicates = true)" v-for="form in wtForms.forms">[[ form.name ]]</span>
+                        <br>Selected Forms: <span v-for="form in blueprint.forms">[[ form ]],</span>
                     </div>
-                <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled" class="btn med-btn orange-btn">Add Field</button>
-            </div>
-            <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" class="btn med-btn orange-btn">Add Form</button>
-
-            Configure Validators
-            <div v-for="validator in wtForms.validators">
-                <label class="container">
-                    [[ validator.name ]]
-                    <input v-model="validator.use" v-bind="validator.use" @click="updateSelectedValidators(validator)" type="checkbox">
-                    <span class="checkmark-ckb"></span>
-                </label>
-                <input v-if="validator.param != undefined" v-model="validator.param" type="text">
-                <input v-if="validator.min != undefined" v-model="validator.min" type="number">
-                <input v-if="validator.max != undefined" v-model="validator.max" type="number">
-                <br><br>
-            </div>
-            <button @click="resetValidatorsConfiguration()" class="btn med-btn orange-btn">Reset Configuration</button>
-        </div>
-
-
-        <label class="container">Use Blueprints
-            <input v-model="blueprints.show" @click="blueprints.show = !blueprints.show" type="checkbox">
-            <span class="checkmark-ckb"></span>
-        </label>
-
-        <div v-if="blueprints.show">Blueprints
-            <div v-for="blueprint in blueprints.blueprintsList">
-                <input type="text" v-model="blueprint.name">
-                <label class="container">Create Forms File
-                    <input v-model="blueprint.addForms" @click="blueprint.addForms = !blueprint.addForms" type="checkbox">
-                    <span class="checkmark-ckb"></span>
-                </label>
-                <div v-if="blueprint.addForms && wtForms.show">
-                    <span @click="extendArrayByElement(blueprint.forms, form.name, avoidDuplicates = true)" v-for="form in wtForms.forms">[[ form.name ]]</span>
-                    <br>Selected Forms: <span v-for="form in blueprint.forms">[[ form ]],</span>
+                    <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)">
                 </div>
-                <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)">
+                <button @click="extendArrayByElement(blueprints.blueprintsList, { name: '', addForms: false, forms: [] })" v-bind:disabled="!blueprints.lastFieldFilled" class="btn med-btn orange-btn">Add Blueprint</button>
             </div>
-            <button @click="extendArrayByElement(blueprints.blueprintsList, { name: '', addForms: false, forms: [] })" v-bind:disabled="!blueprints.lastFieldFilled" class="btn med-btn orange-btn">Add Blueprint</button>
-        </div>
+        </transition>
 
-        <label class="container">Emails
-            <input v-model="emails.show" @click="emails.show = !emails.show" type="checkbox">
-            <span class="checkmark-ckb"></span>
-        </label>
-
-        <div v-if="emails.show">Emails</div>
-    </div>
+        <transition name="fade">
+            <div v-if="emails.show">Emails</div>
+        </transition>
+    </section>
     
     <h2>Requirements</h2>
     <div v-for="package in requirements" v-bind:key="package.name">
