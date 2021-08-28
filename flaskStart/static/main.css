@@ -10,6 +10,7 @@
     --nav-links-color: #E5E5E5;
     --body-bg: #D8EBF9;
     --dark-blue: #0C4470;
+    --shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     --success:  rgb(147, 204, 147);
     --danger: rgb(240, 124, 124);
     --info: rgb(162, 211, 240);
@@ -275,7 +276,7 @@ button:disabled {
     margin-bottom: 1em;
     border-radius: 0.3em;
     padding: 1em;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    box-shadow: var(--shadow);
 }
 
 .db-table .center {
@@ -288,6 +289,24 @@ button:disabled {
     font-size: 1.2em;
     height: 2em;
     text-align: center;
+}
+
+.form-title-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.form {
+    box-shadow: var(--shadow);
+    padding: 1em;
+    border: 1px solid gray;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    border-radius: 0.3em;
 }
 
 @media screen and (max-width: 1150px) {

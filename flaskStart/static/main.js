@@ -6,6 +6,7 @@
     #) change app creation
     #) when user selects create main forms file the option to add seperate forms files for blueprints should be disabled
     #) adding custom tables, not just User
+    #) import mail package when mail selected
 */
 
 var app = new Vue({

@@ -121,16 +121,16 @@
                         </div>
                         
                         <button @click="extendArrayByElement(authSys.userTableFields, {})" v-bind:disabled="!authSys.lastFieldFilled" class="btn med-btn orange-btn">Add Table Column</button>
-                        <span class="text">The login view/route:&nbsp;</span>
-                        <input type="text" v-bind:value="authSys.loginView" v-model="authSys.loginView" placeholder="Login route">
+                        <span class="text mt-1">The login view/route:&nbsp;</span>
+                        <input class="mt-1" type="text" v-bind:value="authSys.loginView" v-model="authSys.loginView" placeholder="Login route">
                     </div>
                 </transition>
             </div>
         </transition>
 
         <transition name="fade">
-            <div v-if="wtForms.show">WT Forms
-                <span>Use CSRF Token</span>
+            <div v-if="wtForms.show">
+                <span class="text">Use CSRF Token</span>
                 <select v-model="wtForms.useCsrf">
                     <option>true</option>
                     <option>false</option>
@@ -141,37 +141,43 @@
                     <span class="checkmark-ckb"></span>
                 </label>
 
-                <div v-for="(form, index) in wtForms.forms">
-                    <span>Form Name</span>
-                    <input type="text" v-model="form.name">
-                    <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">
-                        <div v-for="field in form.fields">
-                            Field name: <input type="text" v-model="field.name">
-                            Field label: <input type="text" v-model="field.label">
-                            <select v-model="field.type">
-                                <option>StringField</option>
-                                <option>PasswordField</option>
-                                <option>SubmitField</option>
-                                <option>BooleanField</option>
-                                <option>TextAreaField</option>
-                                <option>IntegerField</option>
-                                <option>SelectField</option>
-                                <option>FileField</option>
-                                <option>DateField</option>
-                                <option>DateTimeField</option>
-                                <option>DecimalField</option>
-                                <option>MultipleFileField</option>
-                                <option>FloatField</option>
-                                <option>RadioField</option>
-                                <option>SelectMultipleField</option>
-                                <option>HiddenField</option>
-                            </select>
-                            <span v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
-                                [[ validator ]], 
-                            </span>
-                            <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
-                            <button @click="setValidators(field)" class="btn med-btn orange-btn">Set validators</button>
-                        </div>
+                <div class="form" v-for="(form, index) in wtForms.forms">
+                    <div class="form-title-row">
+                        <span>
+                            <span class="text">Form Name:&nbsp;</span>
+                            <input type="text" v-model="form.name">
+                        </span>
+                        <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">    
+                    </div>
+                    
+                    <div v-for="field in form.fields">
+                        <span class="text">Field name:&nbsp;</span><input type="text" v-model="field.name">
+                        <span class="text">Field label:&nbsp;</span><input type="text" v-model="field.label">
+                        <span class="text">Field type:&nbsp;</span>
+                        <select v-model="field.type">
+                            <option>StringField</option>
+                            <option>PasswordField</option>
+                            <option>SubmitField</option>
+                            <option>BooleanField</option>
+                            <option>TextAreaField</option>
+                            <option>IntegerField</option>
+                            <option>SelectField</option>
+                            <option>FileField</option>
+                            <option>DateField</option>
+                            <option>DateTimeField</option>
+                            <option>DecimalField</option>
+                            <option>MultipleFileField</option>
+                            <option>FloatField</option>
+                            <option>RadioField</option>
+                            <option>SelectMultipleField</option>
+                            <option>HiddenField</option>
+                        </select>
+                        <span class="text" v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
+                            [[ validator ]], 
+                        </span>
+                        <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
+                        <button @click="setValidators(field)" class="btn med-btn orange-btn">Set validators</button>
+                    </div>
                     <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled" class="btn med-btn orange-btn">Add Field</button>
                 </div>
                 <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" class="btn med-btn orange-btn">Add Form</button>
