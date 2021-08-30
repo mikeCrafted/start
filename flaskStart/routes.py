@@ -127,24 +127,33 @@ def create_init_file(req, project_dir):
     # getting all necessary imports
     data = data.replace('[[ imports ]]', get_imports(req, 'init'))
     # setting up database if selected
-    db_config = "app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'\n"
-    db_config += "db = SQLAlchemy(app)"
+    if req['addDatabase']:
+        db_config = "app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'\n"
+        db_config += "db = SQLAlchemy(app)\n\n"
+        data = data.replace('[[ db_config ]]', db_config)
+    else:
+        data = data.replace('[[ db_config ]]\n', '')
     if req['addAuthSys']:
-        db_config += "\nbcrypt = Bcrypt(app)"
+        login_config = "bcrypt = Bcrypt(app)\n"
         # setting up loginManager
-        login_config = "login_manager = LoginManager(app)\n"
+        login_config += "login_manager = LoginManager(app)\n"
         login_config += f"login_manager.login_view = '{req['authSys']['loginView']}'\n"
-        login_config += "login_manager.login_message_category = 'info'"
+        login_config += "login_manager.login_message_category = 'info'\n\n"
         data = data.replace('[[ login_config ]]', login_config)
-    data = data.replace('[[ db_config ]]', db_config)
+    else:
+        data = data.replace('[[ login_config ]]\n', '')
     # setting up email
-    email_config  = "app.config['MAIL_SERVER'] = ''          # for example 'smtp.gmail.com'\n"
-    email_config += "app.config['MAIL_PORT'] = ''            # for example 587\n"
-    email_config += "app.config['MAIL_USE_TLS'] = True\n"
-    email_config += "app.config['MAIL_USERNAME'] = ''        # your mail username\n"
-    email_config += "app.config['MAIL_PASSWORD'] = ''        # Don't set your password here as string, use environment variables\n"
-    email_config += "mail = Mail(app)\n"
-    data = data.replace('[[ email_config ]]', email_config)
+    if req['emails']['show']:
+        email_config  = "app.config['MAIL_SERVER'] = ''          # for example 'smtp.gmail.com'\n"
+        email_config += "app.config['MAIL_PORT'] = ''            # for example 587\n"
+        email_config += "app.config['MAIL_USE_TLS'] = True\n"
+        email_config += "app.config['MAIL_USERNAME'] = ''        # your mail username\n"
+        email_config += "app.config['MAIL_PASSWORD'] = ''        # Don't set your password here as string, use environment variables\n"
+        email_config += "mail = Mail(app)\n\n"
+        data = data.replace('[[ email_config ]]', email_config)
+    else:
+        data = data.replace('[[ email_config ]]\n', '')
+
     with open(f"{project_dir}\\__init__.py", 'w') as f:
         f.write(data)
 
