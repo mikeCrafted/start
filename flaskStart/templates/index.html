@@ -129,12 +129,14 @@
         </transition>
 
         <transition name="fade">
-            <div v-if="wtForms.show">
-                <span class="text">Use CSRF Token</span>
-                <select v-model="wtForms.useCsrf">
-                    <option>true</option>
-                    <option>false</option>
-                </select>
+            <div class="wtforms-container" v-if="wtForms.show">
+                <div class="mb-1">
+                    <span class="text">Use CSRF Token</span>
+                    <select v-model="wtForms.useCsrf">
+                        <option>true</option>
+                        <option>false</option>
+                    </select>
+                </div>
                 
                 <label class="container">Use Main Forms File
                     <input v-model="wtForms.asMainFile" @click="wtForms.asMainFile = !wtForms.asMainFile" type="checkbox">
@@ -150,39 +152,57 @@
                         <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(wtForms.forms, form)">    
                     </div>
                     
-                    <div v-for="field in form.fields">
-                        <span class="text">Field name:&nbsp;</span><input type="text" v-model="field.name">
-                        <span class="text">Field label:&nbsp;</span><input type="text" v-model="field.label">
-                        <span class="text">Field type:&nbsp;</span>
-                        <select v-model="field.type">
-                            <option>StringField</option>
-                            <option>PasswordField</option>
-                            <option>SubmitField</option>
-                            <option>BooleanField</option>
-                            <option>TextAreaField</option>
-                            <option>IntegerField</option>
-                            <option>SelectField</option>
-                            <option>FileField</option>
-                            <option>DateField</option>
-                            <option>DateTimeField</option>
-                            <option>DecimalField</option>
-                            <option>MultipleFileField</option>
-                            <option>FloatField</option>
-                            <option>RadioField</option>
-                            <option>SelectMultipleField</option>
-                            <option>HiddenField</option>
-                        </select>
-                        <span class="text" v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
-                            [[ validator ]], 
-                        </span>
-                        <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
-                        <button @click="setValidators(field)" class="btn med-btn orange-btn">Set validators</button>
+                    <div class="form-field-container">
+                        <div class="form-field" v-for="field in form.fields">
+                            <div class="form-field-data">
+                                <div class="form-field-data-input">
+                                    <span class="text">Field name:&nbsp;</span>
+                                    <input type="text" v-model="field.name">
+                                </div>
+                                <div class="form-field-data-input">
+                                    <span class="text">Field label:&nbsp;</span>
+                                    <input type="text" v-model="field.label">
+                                </div>
+                                <div class="form-field-data-input">
+                                    <span class="text">Field type:&nbsp;</span>
+                                    <select v-model="field.type">
+                                        <option>StringField</option>
+                                        <option>PasswordField</option>
+                                        <option>SubmitField</option>
+                                        <option>BooleanField</option>
+                                        <option>TextAreaField</option>
+                                        <option>IntegerField</option>
+                                        <option>SelectField</option>
+                                        <option>FileField</option>
+                                        <option>DateField</option>
+                                        <option>DateTimeField</option>
+                                        <option>DecimalField</option>
+                                        <option>MultipleFileField</option>
+                                        <option>FloatField</option>
+                                        <option>RadioField</option>
+                                        <option>SelectMultipleField</option>
+                                        <option>HiddenField</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <span class="text">Validators: </span>
+                                    <span class="validator text" v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
+                                        [[ validator ]], 
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-field-control">
+                                <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
+                                <button @click="setValidators(field)" class="btn med-btn orange-btn">Set validators</button>
+                            </div>
+                        </div>
                     </div>
+                    
                     <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled" class="btn med-btn orange-btn">Add Field</button>
                 </div>
-                <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" class="btn med-btn orange-btn">Add Form</button>
+                <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" class="btn med-btn orange-btn add-form-btn mb-1">Add Form</button>
 
-                Configure Validators
+                <h2 class="mb-1">Configure Validators</h2>
                 <div v-for="validator in wtForms.validators">
                     <label class="container">
                         [[ validator.name ]]

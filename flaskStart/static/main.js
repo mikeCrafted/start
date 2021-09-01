@@ -6,7 +6,8 @@
     #) change app creation
     #) when user selects create main forms file the option to add seperate forms files for blueprints should be disabled
     #) adding custom tables, not just User
-    #) import mail package when mail selected
+    #) adding background workers
+    #) fixing design
 */
 
 var app = new Vue({
@@ -212,6 +213,15 @@ var app = new Vue({
             },
             deep: true
         },
+        'emails.show': {
+            handler: function() {
+                const packages = [
+                    { name: 'Flask-Mail', version: '0.9.1', type: '=='}
+                ];
+                handlePackages(this.requirements, packages, this.emails.show);
+            },
+            deep: true
+        },
     },
     computed: {
         normalizeFormName() {
@@ -222,9 +232,10 @@ var app = new Vue({
     }
 })
 
-// Function to check if package is already included and add/delete
+// Function to check if package is already included and add/delete (based on boolean value)
 // requirements and packages are lists, condition is boolean
 function handlePackages(requirements, packages, condition) {
+    // adding packages
     if (condition === true) {
         // Looping over packages to add
         for (let i = 0; i < packages.length; i++) {
@@ -236,6 +247,7 @@ function handlePackages(requirements, packages, condition) {
             }
         }
     }
+    // removing packages
     else {
         for (let i = 0; i < packages.length; i++) {
             requirements.forEach(package => package.name === packages[i].name ? requirements.splice(requirements.indexOf(package), 1) : package);
