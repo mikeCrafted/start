@@ -34,7 +34,7 @@
 
         <transition name="fade">
             <div class="virt-env" v-if="virtEnv.show">
-                <h2 class="mt-1">Create Virtual Enironment</h2>
+                <h2 class="mb-1">Create Virtual Enironment</h2>
                 <span class="text">Name:&nbsp;</span><input type="text" v-model="virtEnv.name" v-bind:value="virtEnv.name">
                 <h2 class="mt-1">Parameters</h2>
                 <div class="virt-env-params" v-for="param in virtEnv.params">
@@ -130,6 +130,7 @@
 
         <transition name="fade">
             <div class="wtforms-container" v-if="wtForms.show">
+                <h2 class="mb-1">Configure WT Forms</h2>
                 <div class="mb-1">
                     <span class="text">Use CSRF Token</span>
                     <select v-model="wtForms.useCsrf">
@@ -220,18 +221,29 @@
         </transition>
 
         <transition name="fade">
-            <div v-if="blueprints.show">Blueprints
-                <div v-for="blueprint in blueprints.blueprintsList">
-                    <input type="text" v-model="blueprint.name">
-                    <label class="container">Create Forms File
-                        <input v-model="blueprint.addForms" @click="blueprint.addForms = !blueprint.addForms" type="checkbox">
-                        <span class="checkmark-ckb"></span>
-                    </label>
-                    <div v-if="blueprint.addForms && wtForms.show">
-                        <span @click="extendArrayByElement(blueprint.forms, form.name, avoidDuplicates = true)" v-for="form in wtForms.forms">[[ form.name ]]</span>
-                        <br>Selected Forms: <span v-for="form in blueprint.forms">[[ form ]],</span>
+            <div v-if="blueprints.show">
+                <h2>Blueprints</h2>
+                <div class="blueprints-container">
+                    <div class="blueprint" v-for="blueprint in blueprints.blueprintsList">
+                        <div class="blueprint-data-input">
+                            <span class="text">Blueprint Name: </span>
+                            <input type="text" v-model="blueprint.name">
+                            <label v-if="!wtForms.asMainFile" class="container">Create Forms File
+                                <input v-model="blueprint.addForms" @click="blueprint.addForms = !blueprint.addForms" type="checkbox">
+                                <span class="checkmark-ckb"></span>
+                            </label>
+                            <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)"> 
+                        </div>
+                        <div v-if="blueprint.addForms && wtForms.show">
+                            <span @click="extendArrayByElement(blueprint.forms, form.name, avoidDuplicates = true)" v-for="form in wtForms.forms">
+                                [[ form.name ]]
+                            </span>
+                            Selected Forms: 
+                            <span v-for="form in blueprint.forms">
+                                [[ form ]],
+                            </span>
+                        </div>
                     </div>
-                    <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)">
                 </div>
                 <button @click="extendArrayByElement(blueprints.blueprintsList, { name: '', addForms: false, forms: [] })" v-bind:disabled="!blueprints.lastFieldFilled" class="btn med-btn orange-btn">Add Blueprint</button>
             </div>

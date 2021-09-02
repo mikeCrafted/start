@@ -247,15 +247,21 @@ button:disabled {
     align-items: center;
     justify-content: center;
     margin-top: 1em;
-    margin-bottom: 1em;
+    margin-bottom: 2em;
     column-gap: 1.5em;
+    flex-wrap: wrap;
+    row-gap: 1.5em;
 }
 
 .virt-env {
     margin-top: 1.5em;
     margin-bottom: 1em;
     width: 80%;
-    max-width: 20em;
+    max-width: 25em;
+    border-radius: 0.3em;
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 1em;
 }
 
 .text {
@@ -300,7 +306,7 @@ button:disabled {
     margin-bottom: 1em;
 }
 
-.form-field {
+.form-field, .blueprint {
     display: flex;
     flex-direction: column;
     row-gap: 1em;
@@ -308,6 +314,11 @@ button:disabled {
     border-radius: 0.3em;
     padding: 1em;
     max-width: 25em;
+    box-shadow: var(--shadow);
+}
+
+.blueprint {
+    max-width: 100%!important;
 }
 
 .form-field-data-input {
@@ -326,7 +337,7 @@ button:disabled {
     justify-content: space-evenly;
 }
 
-.form-field-container {
+.form-field-container, .blueprints-container {
     display: flex;
     align-items: flex-start;
     justify-content: space-evenly;
@@ -336,12 +347,8 @@ button:disabled {
 }
 
 .form {
-    box-shadow: var(--shadow);
-    padding: 1em;
-    border: var(--border);
     margin-top: 2em;
     margin-bottom: 2em;
-    border-radius: 0.3em;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -350,6 +357,10 @@ button:disabled {
 .wtforms-container {
     display: flex;
     flex-direction: column;
+    box-shadow: var(--shadow);
+    border: var(--border);
+    border-radius: 0.3em;
+    padding: 1em;
 }
 
 .add-form-btn, .reset-validators-btn {
@@ -378,6 +389,23 @@ button:disabled {
     box-shadow: var(--shadow);
     padding: 1em;
     border-radius: 0.3em;
+}
+
+.blueprint-data-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: 1em;
+    flex-wrap: wrap;
+}
+
+.blueprints-container {
+    border: var(--border);
+    box-shadow: var(--shadow);
+    border-radius: 0.3em;
+    padding: 1em;
+    margin-top: 0.5em;
 }
 
 @media screen and (max-width: 1130px) {
