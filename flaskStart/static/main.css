@@ -11,6 +11,7 @@
     --body-bg: #D8EBF9;
     --dark-blue: #0C4470;
     --shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    --border: 1px solid gray;
     --success:  rgb(147, 204, 147);
     --danger: rgb(240, 124, 124);
     --info: rgb(162, 211, 240);
@@ -271,7 +272,7 @@ button:disabled {
     width: fit-content;
     overflow-x: auto;
     max-width: 90vw;
-    border: 1px solid gray;
+    border: var(--border);
     margin-top: 1em;
     margin-bottom: 1em;
     border-radius: 0.3em;
@@ -296,7 +297,6 @@ button:disabled {
     flex-direction: row;
     align-items: center;
     column-gap: 1em;
-    margin-top: 1em;
     margin-bottom: 1em;
 }
 
@@ -304,17 +304,10 @@ button:disabled {
     display: flex;
     flex-direction: column;
     row-gap: 1em;
-    border: 1px solid gray;
+    border: var(--border);
     border-radius: 0.3em;
     padding: 1em;
     max-width: 25em;
-}
-
-.form-field-data {
-    display: flex;
-    flex-direction: column;
-    row-gap: 1em;
-    
 }
 
 .form-field-data-input {
@@ -322,6 +315,7 @@ button:disabled {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
 
 .form-field-control {
@@ -338,13 +332,13 @@ button:disabled {
     justify-content: space-evenly;
     flex-wrap: wrap;
     row-gap: 2em;
-    column-gap: 2em;
+    column-gap: 1em;
 }
 
 .form {
     box-shadow: var(--shadow);
     padding: 1em;
-    border: 1px solid gray;
+    border: var(--border);
     margin-top: 2em;
     margin-bottom: 2em;
     border-radius: 0.3em;
@@ -358,7 +352,7 @@ button:disabled {
     flex-direction: column;
 }
 
-.add-form-btn {
+.add-form-btn, .reset-validators-btn {
     max-width: 20em;
     width: 15em;
     margin-left: auto;
@@ -368,6 +362,32 @@ button:disabled {
 .validator:hover {
     text-decoration: line-through;
     cursor: pointer;
+}
+
+.validators-container {
+    display: flex;
+    flex-direction: row;
+    column-gap: 1.5em;
+    row-gap: 1em;
+    margin-bottom: 1em;
+    max-width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 1em;
+    border-radius: 0.3em;
+}
+
+@media screen and (max-width: 1130px) {
+    .validators-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        
+        align-items: flex-start;
+    }
 }
 
 @media screen and (max-width: 1150px) {

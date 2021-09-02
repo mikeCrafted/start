@@ -154,42 +154,40 @@
                     
                     <div class="form-field-container">
                         <div class="form-field" v-for="field in form.fields">
-                            <div class="form-field-data">
-                                <div class="form-field-data-input">
-                                    <span class="text">Field name:&nbsp;</span>
-                                    <input type="text" v-model="field.name">
-                                </div>
-                                <div class="form-field-data-input">
-                                    <span class="text">Field label:&nbsp;</span>
-                                    <input type="text" v-model="field.label">
-                                </div>
-                                <div class="form-field-data-input">
-                                    <span class="text">Field type:&nbsp;</span>
-                                    <select v-model="field.type">
-                                        <option>StringField</option>
-                                        <option>PasswordField</option>
-                                        <option>SubmitField</option>
-                                        <option>BooleanField</option>
-                                        <option>TextAreaField</option>
-                                        <option>IntegerField</option>
-                                        <option>SelectField</option>
-                                        <option>FileField</option>
-                                        <option>DateField</option>
-                                        <option>DateTimeField</option>
-                                        <option>DecimalField</option>
-                                        <option>MultipleFileField</option>
-                                        <option>FloatField</option>
-                                        <option>RadioField</option>
-                                        <option>SelectMultipleField</option>
-                                        <option>HiddenField</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <span class="text">Validators: </span>
-                                    <span class="validator text" v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
-                                        [[ validator ]], 
-                                    </span>
-                                </div>
+                            <div class="form-field-data-input">
+                                <span class="text">Field name:&nbsp;</span>
+                                <input type="text" v-model="field.name">
+                            </div>
+                            <div class="form-field-data-input">
+                                <span class="text">Field label:&nbsp;</span>
+                                <input type="text" v-model="field.label">
+                            </div>
+                            <div class="form-field-data-input">
+                                <span class="text">Field type:&nbsp;</span>
+                                <select v-model="field.type">
+                                    <option>StringField</option>
+                                    <option>PasswordField</option>
+                                    <option>SubmitField</option>
+                                    <option>BooleanField</option>
+                                    <option>TextAreaField</option>
+                                    <option>IntegerField</option>
+                                    <option>SelectField</option>
+                                    <option>FileField</option>
+                                    <option>DateField</option>
+                                    <option>DateTimeField</option>
+                                    <option>DecimalField</option>
+                                    <option>MultipleFileField</option>
+                                    <option>FloatField</option>
+                                    <option>RadioField</option>
+                                    <option>SelectMultipleField</option>
+                                    <option>HiddenField</option>
+                                </select>
+                            </div>
+                            <div>
+                                <span class="text">Validators: </span>
+                                <span class="validator text" v-for="validator in field.validators" @click="removeElementFromArray(field.validators, validator)">
+                                    [[ validator ]], 
+                                </span>
                             </div>
                             <div class="form-field-control">
                                 <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(form.fields, field)">
@@ -200,21 +198,24 @@
                     
                     <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled" class="btn med-btn orange-btn">Add Field</button>
                 </div>
+                
                 <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" class="btn med-btn orange-btn add-form-btn mb-1">Add Form</button>
 
                 <h2 class="mb-1">Configure Validators</h2>
-                <div v-for="validator in wtForms.validators">
-                    <label class="container">
-                        [[ validator.name ]]
-                        <input v-model="validator.use" v-bind="validator.use" @click="updateSelectedValidators(validator)" type="checkbox">
-                        <span class="checkmark-ckb"></span>
-                    </label>
-                    <input v-if="validator.param != undefined" v-model="validator.param" type="text">
-                    <input v-if="validator.min != undefined" v-model="validator.min" type="number">
-                    <input v-if="validator.max != undefined" v-model="validator.max" type="number">
-                    <br><br>
+                <div class="validators-container">
+                    <div v-for="validator in wtForms.validators">
+                        <label class="container">
+                            [[ validator.name ]]
+                            <input v-model="validator.use" v-bind="validator.use" @click="updateSelectedValidators(validator)" type="checkbox">
+                            <span class="checkmark-ckb"></span>
+                        </label>
+                        <input v-if="validator.param != undefined" v-model="validator.param" type="text" placeholder="Parameter">
+                        <input v-if="validator.min != undefined" v-model="validator.min" type="number" placeholder="Min">
+                        <input v-if="validator.max != undefined" v-model="validator.max" type="number" placeholder="Max">
+                    </div>
                 </div>
-                <button @click="resetValidatorsConfiguration()" class="btn med-btn orange-btn">Reset Configuration</button>
+                
+                <button @click="resetValidatorsConfiguration()" class="btn med-btn orange-btn reset-validators-btn">Reset Configuration</button>
             </div>
         </transition>
 
