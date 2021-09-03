@@ -7,7 +7,9 @@
     #) when user selects create main forms file the option to add seperate forms files for blueprints should be disabled
     #) adding custom tables, not just User
     #) adding background workers
-    #) fixing design
+    #) style requirements
+    #) add email configuration
+    #) style disabled buttons
 */
 
 var app = new Vue({

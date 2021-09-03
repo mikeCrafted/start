@@ -239,6 +239,11 @@ button:disabled {
     width: 90%;
     margin-top: 1em;
     margin-bottom: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    row-gap: 1.5em;
 }
 
 .settings-ckb {
@@ -354,23 +359,24 @@ button:disabled {
     justify-content: flex-start;
 }
 
-.wtforms-container {
+.wtforms-container, .database-container {
     display: flex;
     flex-direction: column;
     box-shadow: var(--shadow);
     border: var(--border);
     border-radius: 0.3em;
     padding: 1em;
+    min-width: 50vw;
 }
 
-.add-form-btn, .reset-validators-btn {
+.add-form-btn, .reset-validators-btn, .add-blueprint-btn {
     max-width: 20em;
     width: 15em;
     margin-left: auto;
     margin-right: auto;
 }
 
-.validator:hover {
+.validator:hover, .selected-forms-item:hover {
     text-decoration: line-through;
     cursor: pointer;
 }
@@ -400,12 +406,72 @@ button:disabled {
     flex-wrap: wrap;
 }
 
-.blueprints-container {
+.blueprints-section-container {
     border: var(--border);
     box-shadow: var(--shadow);
     border-radius: 0.3em;
     padding: 1em;
     margin-top: 0.5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    row-gap: 1em;
+}
+
+
+.configured-forms-list, .selected-forms-list {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    column-gap: 0.5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.configured-forms-item:hover {
+    cursor: pointer;
+    animation: deleteIcon .2s forwards;
+}
+
+.db-type {
+    display: flex;
+    flex-direction: row;
+    column-gap: 1em;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 0.7em;
+}
+
+.requirements-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1em;
+    border: var(--border);
+    border-radius: 0.3em;
+    box-shadow: var(--shadow);
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.requirements-heading {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.package-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    row-gap: 1em;
+    flex-wrap: wrap;
+    column-gap: 0.5em;
+}
+
+.package-version-input {
+    max-width: 7em;
 }
 
 @media screen and (max-width: 1130px) {

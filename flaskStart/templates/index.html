@@ -48,12 +48,15 @@
         </transition>
 
         <transition name="fade">
-            <div v-if="addDatabase">
-                <span class="text">Chose Database:&nbsp;</span>
-                <select v-model="dbType">
-                    <option>SQL Lite</option>
-                    <option>MySQL</option>
-                </select>
+            <div class="database-container" v-if="addDatabase">
+                <h2>Add Database</h2>
+                <div class="db-type">
+                    <span class="text">Chose Database:&nbsp;</span>
+                    <select v-model="dbType">
+                        <option>SQL Lite</option>
+                        <option>MySQL</option>
+                    </select>
+                </div>
                 
                 <div class="mt-1 mb-1">
                     <label v-if="dbType" class="container">Add Authentication system
@@ -221,7 +224,7 @@
         </transition>
 
         <transition name="fade">
-            <div v-if="blueprints.show">
+            <div class="blueprints-section-container" v-if="blueprints.show">
                 <h2>Blueprints</h2>
                 <div class="blueprints-container">
                     <div class="blueprint" v-for="blueprint in blueprints.blueprintsList">
@@ -234,18 +237,25 @@
                             </label>
                             <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(blueprints.blueprintsList, blueprint)"> 
                         </div>
-                        <div v-if="blueprint.addForms && wtForms.show">
-                            <span @click="extendArrayByElement(blueprint.forms, form.name, avoidDuplicates = true)" v-for="form in wtForms.forms">
-                                [[ form.name ]]
-                            </span>
-                            Selected Forms: 
-                            <span v-for="form in blueprint.forms">
-                                [[ form ]],
-                            </span>
+                        <div class="text" v-if="blueprint.addForms && wtForms.show">
+                             
+                            <ul class="selected-forms-list">
+                                <li>Selected Forms:</li>
+                                <li class="selected-forms-item" @click="removeElementFromArray(blueprint.forms, form.name)" v-for="form in blueprint.forms">
+                                    [[ form ]],
+                                </li>
+                            </ul>
+                            
+                            <ul class="configured-forms-list">
+                                <li>Configured Forms:</li>
+                                <li class="configured-forms-item" @click="extendArrayByElement(blueprint.forms, form.name, avoidDuplicates = true)" v-for="form in wtForms.forms">
+                                    [[ form.name ]],
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <button @click="extendArrayByElement(blueprints.blueprintsList, { name: '', addForms: false, forms: [] })" v-bind:disabled="!blueprints.lastFieldFilled" class="btn med-btn orange-btn">Add Blueprint</button>
+                <button @click="extendArrayByElement(blueprints.blueprintsList, { name: '', addForms: false, forms: [] })" v-bind:disabled="!blueprints.lastFieldFilled" class="btn med-btn orange-btn add-blueprint-btn">Add Blueprint</button>
             </div>
         </transition>
 
@@ -254,19 +264,21 @@
         </transition>
     </section>
     
-    <h2>Requirements</h2>
-    <div v-for="package in requirements" v-bind:key="package.name">
-        <input type="text" v-model="package.name">
-        <select v-model="package.type">
-            <option>==</option>
-            <option>>=</option>
-            <option><=</option>
-        </select>
-        <input type="text" v-model="package.version">
-        <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(requirements, package)">
+    <div class="requirements-container">
+        <h2 class="requirements-heading">Requirements</h2>
+        <div class="package-container" v-for="package in requirements" v-bind:key="package.name">
+            <input type="text" v-model="package.name">
+            <select v-model="package.type">
+                <option>==</option>
+                <option>>=</option>
+                <option><=</option>
+            </select>
+            <input class="package-version-input" type="text" v-model="package.version">
+            <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(requirements, package)">
+        </div>
+        <button @click="extendArrayByElement(requirements, { name: '', version: '', type: '==' })" class="btn med-btn orange-btn">Add Package</button>    
     </div>
-    <button @click="extendArrayByElement(requirements, { name: '', version: '', type: '==' })" class="btn med-btn orange-btn">Add Package</button>
-
+    
     <button @click="sendData" type="button" v-bind:disabled="projectName == ''" class="btn med-btn orange-btn">Create</button>
 
 
