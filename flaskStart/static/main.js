@@ -1,13 +1,12 @@
 /*
     TODO:
-    #) get package verions either from pip website or use api
+    #) alert errors when fetching package versions
     #) add github
     #) add config file
     #) change app creation
-    #) adding custom tables, not just User
+    #) adding custom tables, not just User, foreign keys
     #) adding background workers
-    #) add email configuration
-    #) style disabled buttons
+    #) frontend
 */
 
 var app = new Vue({
@@ -84,6 +83,13 @@ var app = new Vue({
                 { name: 'users', addForms: false, forms: [] }
             ],
         },
+        frontend: {
+            show: false,
+            addCss: true,
+            addJs: true,
+            layout: true,
+            index: true
+        },
     },
     methods: {
         removeElementFromArray: function(array, element) {
@@ -148,6 +154,25 @@ var app = new Vue({
                 validator.min ? validator.min = '' : validator;
                 validator.max ? validator.max = '' : validator;
                 validator.param ? validator.param = '' : validator;
+            });
+        },
+        getLatestPackageVersion: function (package) {
+            fetch(`https://pypi.org/pypi/${package.name}/json`, {
+                method: "GET"
+            })
+            .then(function (response) {
+                if (response.status !== 200) {
+                    alert(`Looks like there was a problem. Status code: ${response.status}`);
+                    return;
+                }
+                response.json().then(function(data) {
+                    const releases = data['releases'];
+                    const latestVersion = Object.keys(releases)[Object.keys(releases).length - 1];
+                    package.version = latestVersion;
+                });
+            })
+            .catch(function (error) {
+                console.log("Fetch error: " + error);
             });
         },
     },

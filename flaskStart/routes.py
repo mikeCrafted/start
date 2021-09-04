@@ -3,8 +3,18 @@ from flaskStart import app, SOURCES
 from venv import EnvBuilder
 import secrets, os, re
 
+
+
+
 @app.route('/')
 def index():
+        
+    import urllib.request, json 
+    package_name = 'flask'
+    with urllib.request.urlopen(f"https://pypi.org/pypi/{package_name}/json") as url:
+        data = json.loads(url.read().decode())
+        latest_version = data['releases']
+        
     return render_template('index.html')
 
 @app.route('/create', methods = ['POST'])
@@ -32,6 +42,10 @@ def create():
     
     # create templates folder
     os.mkdir(f"{project_dir}\\templates")
+    
+    
+    # create static folder
+    os.mkdir(f"{project_dir}\\static")
 
     # create main __init__ file
     create_init_file(req, project_dir)

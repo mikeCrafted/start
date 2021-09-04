@@ -30,6 +30,10 @@
                 <input v-model="emails.show" @click="emails.show = !emails.show" type="checkbox">
                 <span class="checkmark-ckb"></span>
             </label>
+            <label class="container">Frontend
+                <input v-model="frontend.show" @click="frontend.show = !frontend.show" type="checkbox">
+                <span class="checkmark-ckb"></span>
+            </label>
         </div>
 
         <transition name="fade">
@@ -260,13 +264,41 @@
         </transition>
 
         <transition name="fade">
-            <div v-if="emails.show">Emails</div>
+            <div class="email-section-container" v-if="emails.show">
+                <h2>Add Email Configuration</h2>
+                <p class="text">
+                    Please fill in your credentials in the generated __init__.py file.
+                    Make sure to keep your passwords secure.
+                </p>
+            </div>
+        </transition>
+
+        <transition name="fade">
+            <div class="frontend" v-if="frontend.show">
+                <h2>Configure Frontend</h2>
+                <label class="container">Add CSS File
+                    <input v-model="frontend.addCss" @click="frontend.addCss = !frontend.addCss" type="checkbox">
+                    <span class="checkmark-ckb"></span>
+                </label>
+                <label class="container">Add JS File
+                    <input v-model="frontend.addJs" @click="frontend.addJs = !frontend.addJs" type="checkbox">
+                    <span class="checkmark-ckb"></span>
+                </label>
+                <label class="container">Add layout.html
+                    <input v-model="frontend.layout" @click="frontend.layout = !frontend.layout" type="checkbox">
+                    <span class="checkmark-ckb"></span>
+                </label>
+                <label class="container">Add index.html
+                    <input v-model="frontend.index" @click="frontend.index = !frontend.index" type="checkbox">
+                    <span class="checkmark-ckb"></span>
+                </label>
+            </div>
         </transition>
     </section>
     
     <div class="requirements-container">
         <h2 class="requirements-heading">Requirements</h2>
-        <div class="package-container" v-for="package in requirements" v-bind:key="package.name">
+        <div class="package-container" v-for="package in requirements">
             <input type="text" v-model="package.name">
             <select v-model="package.type">
                 <option>==</option>
@@ -274,6 +306,7 @@
                 <option><=</option>
             </select>
             <input class="package-version-input" type="text" v-model="package.version">
+            <button v-bind:disabled="!(package.name.length > 0)" @click="getLatestPackageVersion(package)" class="btn orange-btn small-btn">Get latest version</button>
             <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(requirements, package)">
         </div>
         <button @click="extendArrayByElement(requirements, { name: '', version: '', type: '==' })" class="btn med-btn orange-btn">Add Package</button>    
