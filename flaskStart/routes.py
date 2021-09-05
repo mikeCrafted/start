@@ -4,17 +4,8 @@ from venv import EnvBuilder
 import secrets, os, re
 
 
-
-
 @app.route('/')
-def index():
-        
-    import urllib.request, json 
-    package_name = 'flask'
-    with urllib.request.urlopen(f"https://pypi.org/pypi/{package_name}/json") as url:
-        data = json.loads(url.read().decode())
-        latest_version = data['releases']
-        
+def index():        
     return render_template('index.html')
 
 @app.route('/create', methods = ['POST'])
@@ -42,10 +33,12 @@ def create():
     
     # create templates folder
     os.mkdir(f"{project_dir}\\templates")
-    
-    
     # create static folder
     os.mkdir(f"{project_dir}\\static")
+
+    if req['frontend']['show']['layout']:
+        create_layout(req['frontend'], project_dir)
+        
 
     # create main __init__ file
     create_init_file(req, project_dir)
@@ -218,4 +211,8 @@ def create_models_file(req, project_dir):
     with open(f'{project_dir}\\models.py', 'w') as f:
         f.write(data)
 
-
+def create_layout(frontend, project_dir):
+    with open(f'{SOURCES}\\layout.txt', 'r') as f:
+        data = f.read()
+    with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
+        f.write(data)
