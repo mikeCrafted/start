@@ -25,9 +25,14 @@ var app = new Vue({
                 { name: 'pip', value: true }
             ],
         },
-        requirements: [
-            { name: 'flask', version: '2.0.1', type: '=='},
-        ],
+        requirements: {
+            packages: [
+                { name: 'flask', version: '2.0.1', type: '=='},
+            ],
+            fetchError: false,
+            errorMessage: ''
+        },
+        
         dbType: '',
         authSys: {
             userTableName: 'User',
@@ -157,21 +162,33 @@ var app = new Vue({
             });
         },
         getLatestPackageVersion: function (package) {
+            let requirements = this.requirements;
             fetch(`https://pypi.org/pypi/${package.name}/json`, {
                 method: "GET"
             })
             .then(function (response) {
                 if (response.status !== 200) {
+                    requirements.errorMessage = 'Something went wrong (' + response.status + ')';
+                    requirements.fetchError = true;
                     alert(`Looks like there was a problem. Status code: ${response.status}`);
                     return;
                 }
                 response.json().then(function(data) {
+                    requirements.fetchError = false;
                     const releases = data['releases'];
                     const latestVersion = Object.keys(releases)[Object.keys(releases).length - 1];
                     package.version = latestVersion;
+                    // play input bg animation
+                    const animationDuration = 1;
+                    document.getElementById('packageVersionInput').style.animation = `versionInputSuccess ${animationDuration}s alternate`;
+                    setTimeout(function(){ 
+                        document.getElementById('packageVersionInput').style.animation = '';
+                    }, animationDuration * 1000);
                 });
             })
             .catch(function (error) {
+                requirements.errorMessage = "Fetch error: " + error;
+                requirements.fetchError = true;
                 console.log("Fetch error: " + error);
             });
         },

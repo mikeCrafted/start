@@ -204,7 +204,7 @@
                         </div>
                     </div>
                     
-                    <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled" class="btn med-btn orange-btn">Add Field</button>
+                    <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled" class="btn med-btn orange-btn mt-1">Add Field</button>
                 </div>
                 
                 <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" class="btn med-btn orange-btn add-form-btn mb-1">Add Form</button>
@@ -298,18 +298,24 @@
     
     <div class="requirements-container">
         <h2 class="requirements-heading">Requirements</h2>
-        <div class="package-container" v-for="package in requirements">
+        <transition name="fade">
+            <div v-if="requirements.fetchError" class="fetch-error text">
+                [[ requirements.errorMessage ]]
+            </div>
+        </transition>
+        
+        <div class="package-container" v-for="package in requirements.packages">
             <input type="text" v-model="package.name">
             <select v-model="package.type">
                 <option>==</option>
                 <option>>=</option>
                 <option><=</option>
             </select>
-            <input class="package-version-input" type="text" v-model="package.version">
-            <button v-bind:disabled="!(package.name.length > 0)" @click="getLatestPackageVersion(package)" class="btn orange-btn small-btn">Get latest version</button>
-            <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(requirements, package)">
+            <input onchange="playAnimation()" id="packageVersionInput" class="package-version-input" type="text" v-model="package.version">
+            <button v-bind:disabled="!(package.name.length > 0)" @click="getLatestPackageVersion(package)" class="btn orange-btn med-btn">Get latest version</button>
+            <img class="delete-icon" src="{{ url_for('static', filename = 'img/trash.svg') }}" alt="Delete" @click="removeElementFromArray(requirements.packages, package)">
         </div>
-        <button @click="extendArrayByElement(requirements, { name: '', version: '', type: '==' })" class="btn med-btn orange-btn">Add Package</button>    
+        <button @click="extendArrayByElement(requirements.packages, { name: '', version: '', type: '==' })" class="btn med-btn orange-btn">Add Package</button>    
     </div>
     
     <button @click="sendData" type="button" v-bind:disabled="projectName == ''" class="btn med-btn orange-btn">Create</button>
