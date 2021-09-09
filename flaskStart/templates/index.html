@@ -280,6 +280,16 @@
                     <input v-model="frontend.addCss" @click="frontend.addCss = !frontend.addCss" type="checkbox">
                     <span class="checkmark-ckb"></span>
                 </label>
+
+                <transition name="fade">
+                    <div v-if="frontend.addCss" class="css-config-container">
+                        <label class="container">Add Nav Bar
+                            <input v-model="frontend.addNavBar" @click="frontend.addNavBar = !frontend.addNavBar" type="checkbox">
+                            <span class="checkmark-ckb"></span>
+                        </label>
+                    </div>
+                </transition>
+
                 <label class="container">Add JS File
                     <input v-model="frontend.addJs" @click="frontend.addJs = !frontend.addJs" type="checkbox">
                     <span class="checkmark-ckb"></span>
@@ -290,6 +300,10 @@
                 </label>
                 <label class="container">Add index.html
                     <input v-model="frontend.index" @click="frontend.index = !frontend.index" type="checkbox">
+                    <span class="checkmark-ckb"></span>
+                </label>
+                <label class="container">Add predefined styles for check- and radiobuttons 
+                    <input v-model="frontend.checkRad" @click="frontend.checkRad = !frontend.checkRad" type="checkbox">
                     <span class="checkmark-ckb"></span>
                 </label>
             </div>

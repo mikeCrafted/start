@@ -1,0 +1,66 @@
+[[ navbar_html_start ]]
+        <nav> 
+            <ul class="nav-links">
+                <div class="nav-links-left">
+                    <a href=""><li>Home</li></a>
+                    <a href=""><li>About</li></a>
+                </div>
+            </ul>
+        </nav>
+[[ navbar_html_end ]]
+
+[[ navbar_css_start ]]
+/* =========== Navigation bar =========== */
+nav {
+    grid-area: header;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    background-color: var(--nav-bg-color);
+    max-width: 100%;
+    border-bottom: solid #355C7A 10px;
+}
+
+.nav-links {
+    height: 100%;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    list-style: none;
+    justify-content: space-between;
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+
+.nav-links a {
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+    color: var(--nav-links-color);
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bolder;
+    padding: 10px;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+.nav-links li {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav-links-left {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+/* ========= Navigation bar end ========= */
+[[ navbar_css_end ]]

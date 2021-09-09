@@ -24,7 +24,7 @@ def create():
     
     # creating requirements file
     with open(f'{project_dir}\\requirements.txt', 'w') as f:
-        for package in req['requirements']:
+        for package in req['requirements']['packages']:
             f.write(f"{package['name']}{package['type']}{package['version']}\n")
 
     # second level project folder for routes, blueprints etc.
@@ -36,8 +36,8 @@ def create():
     # create static folder
     os.mkdir(f"{project_dir}\\static")
 
-    if req['frontend']['show']['layout']:
-        create_layout(req['frontend'], project_dir)
+    if req['frontend']['show']:
+        create_frontend(req['frontend'], project_dir, req['projectName'])
         
 
     # create main __init__ file
@@ -211,8 +211,75 @@ def create_models_file(req, project_dir):
     with open(f'{project_dir}\\models.py', 'w') as f:
         f.write(data)
 
-def create_layout(frontend, project_dir):
-    with open(f'{SOURCES}\\layout.txt', 'r') as f:
-        data = f.read()
-    with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
-        f.write(data)
+def create_frontend(frontend, project_dir, project_name):
+    if frontend['layout'] or frontend['index']:
+        with open(f'{SOURCES}\\layout.txt', 'r') as f:
+            data = f.read()
+        
+        data = data.replace('[[ project_name ]]', project_name)
+
+        if frontend['addCss']:
+            data = add_css_link(data, '[[ main_css_link ]]', 'main.css')
+        else:
+            data = data.replace('[[ main_css_link ]]\n        ', '')
+
+        if frontend['checkRad']:
+            data = add_css_link(data, '[[ radio_check_css_link ]]', 'checkradio.css')
+        else:
+            data = data.replace('[[ radio_check_css_link ]]\n        ', '')
+
+        if frontend['addNavBar']:
+            with open(f'{SOURCES}\\navbar.txt', 'r') as f:
+                navbar = f.read()
+            data = data.replace('[[ nav ]]', navbar[navbar.index('[[ navbar_html_start ]]') + 23 : navbar.index('[[ navbar_html_end ]]')])
+
+        if frontend['addJs']:
+            scripts = "<script src=\"{{ url_for('static', filename = 'main.js') }}\"></script>"
+            data = data.replace('[[ scripts ]]', scripts)
+        else:
+            data = data.replace('[[ scripts ]]', '')
+
+        # saving with correct filename
+        if frontend['layout'] and frontend['index']:
+            with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
+                f.write(data)
+            with open(f"{project_dir}\\templates\\index.html", 'w') as f:
+                f.write("{% extends \"layout.html\" %}\n\n{% block content %}\n\n{% endblock content %}")
+        elif frontend['layout']:
+            with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
+                f.write(data)
+        elif frontend['index']:
+            with open(f"{project_dir}\\templates\\index.html", 'w') as f:
+                f.write(data)
+
+    # creating css file
+    if frontend['addCss']:
+        with open(f'{SOURCES}\\mainCss.txt', 'r') as f:
+            css = f.read()
+
+        if frontend['addNavBar']:
+            with open(f'{SOURCES}\\navbar.txt', 'r') as f:
+                navbar = f.read()
+            css = css.replace('[[ nav ]]', navbar[navbar.index('[[ navbar_css_start ]]') + 22 : navbar.index('[[ navbar_css_end ]]')])
+
+        with open(f"{project_dir}\\static\\main.css", 'w') as f:
+            f.write(css)
+    
+    # creating additional css file for checkbuttons and radiobuttons styles
+    if frontend['checkRad']:
+        with open(f'{SOURCES}\\checkRad.txt', 'r') as f:
+            check_rad_css = f.read()
+        with open(f"{project_dir}\\static\\checkradio.css", 'w') as f:
+            f.write(check_rad_css)
+    
+    # TODO: replace [[ nav ]]
+
+    # creating js file
+    if frontend['addJs']:
+        with open(f"{project_dir}\\static\\main.js", 'w') as f:
+            f.write("")
+    
+
+def add_css_link(data, placeholder, filename):
+    return data.replace(placeholder, f"<link rel=\"stylesheet\" type=\"text/css\" href=\"{{ url_for('static', filename = '{filename}') }}\">")
+

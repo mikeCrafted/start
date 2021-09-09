@@ -1,12 +1,12 @@
 /*
     TODO:
-    #) alert errors when fetching package versions
     #) add github
     #) add config file
     #) change app creation
     #) adding custom tables, not just User, foreign keys
     #) adding background workers
     #) frontend
+    #) add standard media queries to css
 */
 
 var app = new Vue({
@@ -91,9 +91,11 @@ var app = new Vue({
         frontend: {
             show: false,
             addCss: true,
+            addNavBar: false,
             addJs: true,
             layout: true,
-            index: true
+            index: true,
+            checkRad: true,
         },
     },
     methods: {
