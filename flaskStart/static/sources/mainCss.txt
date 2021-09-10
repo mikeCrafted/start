@@ -7,7 +7,29 @@
 
 :root {
     /* Define your CSS-variables here */
+    /* For Flashed Messages */
+    --success:  rgb(147, 204, 147);
+    --danger: rgb(240, 100, 100);
+    --info: rgb(162, 211, 240);
+
+    --nav-links-color: #E5E5E5;
+    --body-bg: #D8EBF9;
+    --dark-blue: #0C4470;
+    --nav-bg-color: #508CBA;
 }
+
+.alert-success {
+    background-color: var(--success);
+}
+
+.alert-danger {
+    background-color: var(--danger);
+}
+
+.alert-info {
+    background-color: var(--info);
+}
+
 
 body {
     display: grid;

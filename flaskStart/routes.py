@@ -175,6 +175,14 @@ def create_routes_file(req, project_dir):
     # import forms
     if req['wtForms']['show']:
         data += f"from {req['projectName']}.forms import {', '.join([form['name'] for form in req['wtForms']['forms']])}\n"
+    if req['frontend']['index']:
+        data += """\n@app.route('/')
+def index():        
+    return render_template('index.html')"""
+    else:
+        data += """\n@app.route('/')
+def index():        
+    return '<h1>Hello World!</h1>'"""
     with open(f'{project_dir}\\routes.py', 'w') as f:
         f.write(data)
 
@@ -234,7 +242,7 @@ def create_frontend(frontend, project_dir, project_name):
             data = data.replace('[[ nav ]]', navbar[navbar.index('[[ navbar_html_start ]]') + 23 : navbar.index('[[ navbar_html_end ]]')])
 
         if frontend['addJs']:
-            scripts = "<script src=\"{{ url_for('static', filename = 'main.js') }}\"></script>"
+            scripts = f"<script src=\"{{{{ url_for('static', filename = 'main.js') }}}}\"></script>"
             data = data.replace('[[ scripts ]]', scripts)
         else:
             data = data.replace('[[ scripts ]]', '')
@@ -271,15 +279,18 @@ def create_frontend(frontend, project_dir, project_name):
             check_rad_css = f.read()
         with open(f"{project_dir}\\static\\checkradio.css", 'w') as f:
             f.write(check_rad_css)
-    
-    # TODO: replace [[ nav ]]
 
     # creating js file
     if frontend['addJs']:
+        js = ''
+        if frontend['addNavBar']:
+            with open(f'{SOURCES}\\navbar.txt', 'r') as f:
+                navbar = f.read()
+            js = navbar[navbar.index('[[ navbar_js_start ]]') + 21 : navbar.index('[[ navbar_js_end ]]')]
         with open(f"{project_dir}\\static\\main.js", 'w') as f:
-            f.write("")
+            f.write(js)
     
 
 def add_css_link(data, placeholder, filename):
-    return data.replace(placeholder, f"<link rel=\"stylesheet\" type=\"text/css\" href=\"{{ url_for('static', filename = '{filename}') }}\">")
+    return data.replace(placeholder, f"<link rel=\"stylesheet\" type=\"text/css\" href=\"{{{{ url_for('static', filename = '{filename}') }}}}\">")
 

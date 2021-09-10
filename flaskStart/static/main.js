@@ -1,12 +1,10 @@
 /*
     TODO:
-    #) add github
     #) add config file
     #) change app creation
     #) adding custom tables, not just User, foreign keys
     #) adding background workers
-    #) frontend
-    #) add standard media queries to css
+    #) mobile version of navbar not working
 */
 
 var app = new Vue({

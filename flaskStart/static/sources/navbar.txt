@@ -5,7 +5,15 @@
                     <a href=""><li>Home</li></a>
                     <a href=""><li>About</li></a>
                 </div>
+                <div class="nav-links-right">
+                    <a href=""><li>Login</li></a> 
+                </div>
             </ul>
+            <div class="burger">
+                <div class="burger-line"></div>
+                <div class="burger-line"></div>
+                <div class="burger-line"></div>
+            </div>
         </nav>
 [[ navbar_html_end ]]
 
@@ -62,5 +70,119 @@ nav {
     align-items: flex-start;
     justify-content: center;
 }
+
+.burger {
+    height: 50px;
+    width: 50px;
+    display: none;
+    border: 1px solid var(--main-bg-color);
+    border-radius: 2px;
+    padding: 5px;
+}
+
+.burger-line {
+    border-radius: 2px;
+    background-color: var(--main-bg-color);
+    height: 4px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.nav-active {
+    transform: translateX(0%);
+}
+
+.nav-links-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Animation for navlinks */
+@keyframes navLinkFade {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+@media screen and (max-width: 800px) {
+    body {
+        overflow-x: hidden;
+    }
+    
+    nav {
+        background-color: var(--body-bg);
+        background-image: none;
+    }
+
+    .nav-links a {
+        border: none;
+        height: 80px;    
+    }
+
+    .nav-links-right, .nav-links-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 0rem;
+        right: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        width: 50%;
+        transform: translateX(100%);
+        transition: transform 0.5s ease-in;
+        padding-top: 5rem;
+    }
+    
+    .nav-links li {
+        opacity: 0;
+        height: 50px;
+    }
+
+    .burger {
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+        cursor: pointer;
+    }
+}
 /* ========= Navigation bar end ========= */
 [[ navbar_css_end ]]
+
+[[ navbar_js_start ]]
+const navSlide = () => {
+    const burger = document.querySelector('.burger');
+    const nav = document.querySelector('.nav-links');
+    var navLinksLeft = document.querySelectorAll('nav .nav-links li');
+    
+    //Toggle nav
+    burger.addEventListener('click', () => {
+        nav.classList.toggle('nav-active');
+
+        // Animate links
+        navLinksLeft.forEach((link, index) => {
+            if (link.style.animation) {
+                link.style.animation = '';
+            }
+            else {
+                link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
+            }
+        });
+
+    });
+}
+navSlide();
+[[ navbar_js_end ]]
