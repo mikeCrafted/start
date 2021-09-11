@@ -40,6 +40,11 @@ nav {
     margin-right: 2rem;
 }
 
+.nav-links-right {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .nav-links a {
     font-family: Arial, Helvetica, sans-serif;
     display: flex;
@@ -75,46 +80,32 @@ nav {
     height: 50px;
     width: 50px;
     display: none;
-    border: 1px solid var(--main-bg-color);
+    border: 1px solid var(--nav-links-color);
     border-radius: 2px;
     padding: 5px;
 }
 
 .burger-line {
     border-radius: 2px;
-    background-color: var(--main-bg-color);
+    background-color: var(--nav-links-color);
     height: 4px;
     width: 100%;
     transition: all 0.3s ease;
 }
 
-.nav-active {
-    transform: translateX(0%);
+.burger:hover .burger-line{
+    width: 110%;
 }
+/* ========= Navigation bar end ========= */
+[[ navbar_css_end ]]
 
-.nav-links-right {
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* Animation for navlinks */
-@keyframes navLinkFade {
-    from {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0px);
-    }
-}
-@media screen and (max-width: 800px) {
+[[ navbar_css_mobile_start ]]
     body {
         overflow-x: hidden;
     }
     
     nav {
-        background-color: var(--body-bg);
+        background-color: var(--nav-bg-color);
         background-image: none;
     }
 
@@ -130,6 +121,7 @@ nav {
         justify-content: flex-start;
     }
 
+
     .nav-links {
         position: absolute;
         top: 0rem;
@@ -142,7 +134,9 @@ nav {
         width: 50%;
         transform: translateX(100%);
         transition: transform 0.5s ease-in;
+        background-color: var(--nav-bg-color);
         padding-top: 5rem;
+        margin: 0;
     }
     
     .nav-links li {
@@ -158,9 +152,25 @@ nav {
         justify-content: space-evenly;
         cursor: pointer;
     }
+[[ navbar_css_mobile_end ]]
+
+[[ navbar_css_animation_start ]]
+.nav-active {
+    transform: translateX(0%);
 }
-/* ========= Navigation bar end ========= */
-[[ navbar_css_end ]]
+
+/* Animation for navlinks */
+@keyframes navLinkFade {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0px);
+    }
+}
+[[ navbar_css_animation_end ]]
 
 [[ navbar_js_start ]]
 const navSlide = () => {

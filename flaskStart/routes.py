@@ -269,7 +269,12 @@ def create_frontend(frontend, project_dir, project_name):
             with open(f'{SOURCES}\\navbar.txt', 'r') as f:
                 navbar = f.read()
             css = css.replace('[[ nav ]]', navbar[navbar.index('[[ navbar_css_start ]]') + 22 : navbar.index('[[ navbar_css_end ]]')])
-
+            css = css.replace('[[ navbar_css_mobile ]]', navbar[navbar.index('[[ navbar_css_mobile_start ]]') + 29 : navbar.index('[[ navbar_css_mobile_end ]]')])
+            css = css.replace('[[ navbar_css_animation ]]', navbar[navbar.index('[[ navbar_css_animation_start ]]') + 32 : navbar.index('[[ navbar_css_animation_end ]]')])
+        else:
+            css = css.replace('[[ nav ]]\n\n', '')
+            css = css.replace('[[ navbar_css_mobile ]]', '')
+            css = css.replace('[[ navbar_css_animation ]]', '')
         with open(f"{project_dir}\\static\\main.css", 'w') as f:
             f.write(css)
     
