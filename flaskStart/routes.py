@@ -63,8 +63,9 @@ def create():
     else:
         create_routes_file(req, project_dir)
     
-    if req['addAuthSys']:
+    if req['addDatabase']:
         create_models_file(req, project_dir)
+
     return make_response(jsonify('ok'), 200)
 
 # DB
@@ -83,16 +84,13 @@ def create_blueprints(blueprintsDict, wtForms, project_dir, project_name):
     for blueprint in blueprintsDict['blueprintsList']:
         os.mkdir(f"{project_dir}\\{blueprint['name']}")
         with open(f"{project_dir}\\{blueprint['name']}\\__init__.py", 'w'): pass
-        data = f"from {project_name} import app\n" 
-        data += "from flask import Blueprint, render_template, url_for, redirect, request\n\n"
-        data += f"{blueprint['name']} = Blueprint('{blueprint['name']}', __name__)\n"
-        data += f"# Use @{blueprint['name']}.route()"
         with open(f"{project_dir}\\{blueprint['name']}\\routes.py", 'w') as f:
-            f.write(data)
+            f.write(generate_blueprint_imports_string(project_name, blueprint['name']))
         for_main_init += f"from {project_name}.{blueprint['name']}.routes import {blueprint['name']}\n"
         for_main_init += f"app.register_blueprint({blueprint['name']})\n"
         if blueprint['addForms']:
-            create_forms_file([form for form in wtForms['forms'] if form['name'] in blueprint['forms']], f"{project_dir}\\{blueprint['name']}")
+            forms_list = [form for form in wtForms['forms'] if form['name'] in blueprint['forms']]
+            create_forms_file(forms_list, f"{project_dir}\\{blueprint['name']}")
     with open(f"{project_dir}\\__init__.py", 'r') as f:
         init_data = f.read()
     with open(f"{project_dir}\\__init__.py", 'w') as f:
@@ -134,33 +132,9 @@ def create_init_file(req, project_dir):
     # getting all necessary imports
     data = data.replace('[[ imports ]]', get_imports(req, 'init'))
     # setting up database if selected
-    if req['addDatabase']:
-        db_config = "app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'\n"
-        db_config += "db = SQLAlchemy(app)\n\n"
-        data = data.replace('[[ db_config ]]', db_config)
-    else:
-        data = data.replace('[[ db_config ]]\n', '')
-    if req['addAuthSys']:
-        login_config = "bcrypt = Bcrypt(app)\n"
-        # setting up loginManager
-        login_config += "login_manager = LoginManager(app)\n"
-        login_config += f"login_manager.login_view = '{req['authSys']['loginView']}'\n"
-        login_config += "login_manager.login_message_category = 'info'\n\n"
-        data = data.replace('[[ login_config ]]', login_config)
-    else:
-        data = data.replace('[[ login_config ]]\n', '')
-    # setting up email
-    if req['emails']['show']:
-        email_config  = "app.config['MAIL_SERVER'] = ''          # for example 'smtp.gmail.com'\n"
-        email_config += "app.config['MAIL_PORT'] = ''            # for example 587\n"
-        email_config += "app.config['MAIL_USE_TLS'] = True\n"
-        email_config += "app.config['MAIL_USERNAME'] = ''        # your mail username\n"
-        email_config += "app.config['MAIL_PASSWORD'] = ''        # Don't set your password here as string, use environment variables\n"
-        email_config += "mail = Mail(app)\n\n"
-        data = data.replace('[[ email_config ]]', email_config)
-    else:
-        data = data.replace('[[ email_config ]]\n', '')
-
+    data = replace_placeholder(data, req['addDatabase'], '[[ db_config ]]', generate_db_config_string(req['dbType']))
+    data = replace_placeholder(data, req['addAuthSys'], '[[ login_config ]]', generate_login_config_string(req['authSys']['loginView']))
+    data = replace_placeholder(data, req['emails']['show'], '[[ email_config ]]', generate_email_config_string())
     with open(f"{project_dir}\\__init__.py", 'w') as f:
         f.write(data)
 
@@ -175,14 +149,14 @@ def create_routes_file(req, project_dir):
     # import forms
     if req['wtForms']['show']:
         data += f"from {req['projectName']}.forms import {', '.join([form['name'] for form in req['wtForms']['forms']])}\n"
-    if req['frontend']['index']:
-        data += """\n@app.route('/')
-def index():        
-    return render_template('index.html')"""
+    if req['frontend']['show'] and req['frontend']['index']:
+        data += "\n@app.route('/')\n"
+        data += "def index():\n\t"
+        data += "return render_template('index.html')"  
     else:
-        data += """\n@app.route('/')
-def index():        
-    return '<h1>Hello World!</h1>'"""
+        data += "\n@app.route('/')\n"
+        data += "def index():\n\t"     
+        data += "return '<h1>Hello World!</h1>'"
     with open(f'{project_dir}\\routes.py', 'w') as f:
         f.write(data)
 
@@ -208,14 +182,10 @@ def get_imports(req, destination):
     return imports
 
 def create_models_file(req, project_dir):
-    data = f"from {req['projectName']} import db, login_manager\n"
-    data += "from flask_login import UserMixin\n\n"
-    data += "@login_manager.user_loader\n"
-    data += "def load_user(user_id):\n\t"
-    data += f"return {req['authSys']['userTableName']}.query.get(int(user_id))\n\n"
-    data += f"class {req['authSys']['userTableName']}(db.Model, UserMixin):\n"
-    for field in req['authSys']['userTableFields']:
-        data += f"\t{field['name']} = db.Column(db.{field['type']}, primary_key = {field['pk']}, nullable = {field['nullable']}, unique = {field['unique']})\n"
+    if req['addAuthSys']:
+        data = generate_model_string(req)
+    else:
+        data = ''
     with open(f'{project_dir}\\models.py', 'w') as f:
         f.write(data)
 
@@ -223,29 +193,12 @@ def create_frontend(frontend, project_dir, project_name):
     if frontend['layout'] or frontend['index']:
         with open(f'{SOURCES}\\layout.txt', 'r') as f:
             data = f.read()
-        
         data = data.replace('[[ project_name ]]', project_name)
-
-        if frontend['addCss']:
-            data = add_css_link(data, '[[ main_css_link ]]', 'main.css')
-        else:
-            data = data.replace('[[ main_css_link ]]\n        ', '')
-
-        if frontend['checkRad']:
-            data = add_css_link(data, '[[ radio_check_css_link ]]', 'checkradio.css')
-        else:
-            data = data.replace('[[ radio_check_css_link ]]\n        ', '')
-
-        if frontend['addNavBar']:
-            with open(f'{SOURCES}\\navbar.txt', 'r') as f:
-                navbar = f.read()
-            data = data.replace('[[ nav ]]', navbar[navbar.index('[[ navbar_html_start ]]') + 23 : navbar.index('[[ navbar_html_end ]]')])
-
-        if frontend['addJs']:
-            scripts = f"<script src=\"{{{{ url_for('static', filename = 'main.js') }}}}\"></script>"
-            data = data.replace('[[ scripts ]]', scripts)
-        else:
-            data = data.replace('[[ scripts ]]', '')
+        data = replace_placeholder(data, frontend['addCss'], '[[ main_css_link ]]', create_css_link('main.css'), placeholder_if_false = '[[ main_css_link ]]\n        ')
+        data = replace_placeholder(data, frontend['checkRad'], '[[ radio_check_css_link ]]', create_css_link('checkradio.css'), placeholder_if_false = '[[ radio_check_css_link ]]\n        ')
+        data = replace_placeholder(data, frontend['addNavBar'], '[[ nav ]]', read_navbar_html_string())
+        scripts_link = f"<script src=\"{{{{ url_for('static', filename = 'main.js') }}}}\"></script>"
+        data = replace_placeholder(data, frontend['addJs'], '[[ scripts ]]', scripts_link, placeholder_if_false = '[[ scripts ]]')
 
         # saving with correct filename
         if frontend['layout'] and frontend['index']:
@@ -296,6 +249,67 @@ def create_frontend(frontend, project_dir, project_name):
             f.write(js)
     
 
-def add_css_link(data, placeholder, filename):
-    return data.replace(placeholder, f"<link rel=\"stylesheet\" type=\"text/css\" href=\"{{{{ url_for('static', filename = '{filename}') }}}}\">")
+def create_css_link(filename):
+    return f"<link rel=\"stylesheet\" type=\"text/css\" href=\"{{{{ url_for('static', filename = '{filename}') }}}}\">"
+
+
+def generate_db_config_string(db_type):
+    if db_type == 'MySQL':
+        db_config = "app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://username:password@localhost/site'\n"
+    else:
+        db_config = "app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'\n"
+    db_config += "db = SQLAlchemy(app)\n"
+    db_config += "db.create_all()\n"
+    db_config += "db.session.commit()\n\n"
+    return db_config
+
+def generate_login_config_string(login_view):
+    login_config = "bcrypt = Bcrypt(app)\n"
+    # setting up loginManager
+    login_config += "login_manager = LoginManager(app)\n"
+    login_config += f"login_manager.login_view = '{login_view}'\n"
+    login_config += "login_manager.login_message_category = 'info'\n\n"
+    return login_config
+
+def generate_email_config_string():
+    email_config  = "app.config['MAIL_SERVER'] = ''          # for example 'smtp.gmail.com'\n"
+    email_config += "app.config['MAIL_PORT'] = ''            # for example 587\n"
+    email_config += "app.config['MAIL_USE_TLS'] = True\n"
+    email_config += "app.config['MAIL_USERNAME'] = ''        # your mail username\n"
+    email_config += "app.config['MAIL_PASSWORD'] = ''        # Don't set your password here as string, use environment variables\n"
+    email_config += "mail = Mail(app)\n\n"
+    return email_config
+
+def generate_blueprint_imports_string(project_name, blueprint_name):
+    data = f"from {project_name} import app\n" 
+    data += "from flask import Blueprint, render_template, url_for, redirect, request\n\n"
+    data += f"{blueprint_name} = Blueprint('{blueprint_name}', __name__)\n"
+    data += f"# Use @{blueprint_name}.route()"
+    return data
+
+def replace_placeholder(data, condition, placeholder, new_value, placeholder_if_false = ""):
+    if condition:
+        data = data.replace(placeholder, new_value)
+    else:
+        if placeholder_if_false == "":
+            data = data.replace(f"{placeholder}\n", '')
+        else:
+            data = data.replace(placeholder_if_false, '')
+    return data
+
+def generate_model_string(req):
+    data = f"from {req['projectName']} import db, login_manager\n"
+    data += "from flask_login import UserMixin\n\n"
+    data += "@login_manager.user_loader\n"
+    data += "def load_user(user_id):\n\t"
+    data += f"return {req['authSys']['userTableName']}.query.get(int(user_id))\n\n"
+    data += f"class {req['authSys']['userTableName']}(db.Model, UserMixin):\n"
+    for field in req['authSys']['userTableFields']:
+        data += f"\t{field['name']} = db.Column(db.{field['type']}, primary_key = {field['pk']}, nullable = {field['nullable']}, unique = {field['unique']})\n"
+    return data
+
+def read_navbar_html_string():
+    with open(f'{SOURCES}\\navbar.txt', 'r') as f:
+        navbar = f.read()
+    return navbar[navbar.index('[[ navbar_html_start ]]') + 23 : navbar.index('[[ navbar_html_end ]]')]
 

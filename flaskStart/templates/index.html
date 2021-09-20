@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
+    <div v-if="showLoader" id="loader" class="loader-container">
+        <div class="loader"></div>
+    </div>
+
     <section class="project-name-section">
         <h1 v-if="projectName == ''">Generate Flask project template</h1>
         <h1 v-else>Generate [[ projectName ]]</h1>

@@ -1,10 +1,11 @@
 /*
     TODO:
     #) add config file
-    #) change app creation
     #) adding custom tables, not just User, foreign keys
     #) adding background workers
-    #) mobile version of navbar not working
+    #) make components collapsible
+    #) add description for validators etc.
+    #) generate html files with forms
 */
 
 var app = new Vue({
@@ -14,6 +15,7 @@ var app = new Vue({
         projectName: '',
         addDatabase: false,
         addAuthSys: false,
+        showLoader: false,
         virtEnv: {
             show: false,
             name: 'venv',
@@ -107,6 +109,8 @@ var app = new Vue({
             else array.splice(array.length, 1, element);
         },
         sendData: function() {
+            const t = this;
+            t.showLoader = true;
             fetch(`${window.origin}/create`, {
                 method: "POST",
                 body: JSON.stringify(this.$data),
@@ -115,6 +119,8 @@ var app = new Vue({
                 })
             })
             .then(function (response) {
+                t.showLoader = false;
+                
                 if (response.status !== 200) {
                     alert(`Looks like there was a problem. Status code: ${response.status}`);
                     return;
@@ -123,7 +129,7 @@ var app = new Vue({
                 response.json().then(function(data) {
                     
                 });
-                
+                return t.showLoader;
             })
             .catch(function (error) {
                 console.log("Fetch error: " + error);
@@ -191,7 +197,7 @@ var app = new Vue({
                 requirements.fetchError = true;
                 console.log("Fetch error: " + error);
             });
-        },
+        }
     },
     watch: {
         'authSys.userTableFields': {
@@ -199,16 +205,13 @@ var app = new Vue({
                 this.authSys.lastFieldFilled = checkLastField(this.authSys.userTableFields);
             }
         },
-        dbType: function() {
-            console.log(this.dbType);
-        },
         addAuthSys: {
             handler: function() {
                 const packages = [
                     { name: 'Flask-Login', version: '0.5.0', type: '==' }, 
                     { name: 'Bcrypt-Flask', version: '1.0.1', type: '==' }
                 ];
-                handlePackages(this.requirements, packages, this.addAuthSys);
+                handlePackages(this.requirements.packages, packages, this.addAuthSys);
                 if (!this.wtForms.forms.some(e => e.name === 'LoginForm')) {
                     this.extendArrayByElement(this.wtForms.forms, { 
                         name: 'LoginForm', 
@@ -226,14 +229,14 @@ var app = new Vue({
                 const packages = [
                     { name: 'Flask-SQLAlchemy', version: '2.5.1', type: '=='}
                 ];
-                handlePackages(this.requirements, packages, this.addDatabase);
+                handlePackages(this.requirements.packages, packages, this.addDatabase);
             },
             deep: true
         },
         'wtForms.show': {
             handler: function() {
                 const package = [ { name: 'Flask-WTF', version: '2.3.3', type: '==' } ];
-                handlePackages(this.requirements, package, this.wtForms.show);
+                handlePackages(this.requirements.packages, package, this.wtForms.show);
             }
         },
         'wtForms.forms': {
@@ -260,7 +263,7 @@ var app = new Vue({
                 const packages = [
                     { name: 'Flask-Mail', version: '0.9.1', type: '=='}
                 ];
-                handlePackages(this.requirements, packages, this.emails.show);
+                handlePackages(this.requirements.packages, packages, this.emails.show);
             },
             deep: true
         },

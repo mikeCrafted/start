@@ -471,6 +471,41 @@ button:disabled {
     }
 }
 
+/* Loader */
+.loader-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.4);   
+}
+
+.loader {
+    border: 16px solid #c9c5c5;
+    border-radius: 50%;
+    border-top: 16px solid green;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 3s linear infinite; /* Safari */
+    animation: spin 3s linear infinite;
+    position: absolute;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+  
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 @media screen and (max-width: 1130px) {
     .validators-container {
         display: flex;
