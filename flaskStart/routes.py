@@ -193,50 +193,37 @@ def create_frontend(frontend, project_dir, project_name):
     if frontend['layout'] or frontend['index']:
         with open(f'{SOURCES}\\layout.txt', 'r') as f:
             data = f.read()
+        with open(f'{SOURCES}\\navbar.txt', 'r') as f:
+            navbar = f.read()
+        
         data = data.replace('[[ project_name ]]', project_name)
         data = replace_placeholder(data, frontend['addCss'], '[[ main_css_link ]]', create_css_link('main.css'), placeholder_if_false = '[[ main_css_link ]]\n        ')
         data = replace_placeholder(data, frontend['checkRad'], '[[ radio_check_css_link ]]', create_css_link('checkradio.css'), placeholder_if_false = '[[ radio_check_css_link ]]\n        ')
-        data = replace_placeholder(data, frontend['addNavBar'], '[[ nav ]]', read_navbar_substring('[[ navbar_html_start ]]'))
+        data = replace_placeholder(data, frontend['addNavBar'], '[[ nav ]]', get_navbar_substring(navbar, '[[ navbar_html_start ]]'))
         scripts_link = f"<script src=\"{{{{ url_for('static', filename = 'main.js') }}}}\"></script>"
         data = replace_placeholder(data, frontend['addJs'], '[[ scripts ]]', scripts_link, placeholder_if_false = '[[ scripts ]]')
 
         # saving with correct filename
-        if frontend['layout'] and frontend['index']:
-            with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
-                f.write(data)
-            with open(f"{project_dir}\\templates\\index.html", 'w') as f:
-                f.write("{% extends \"layout.html\" %}\n\n{% block content %}\n\n{% endblock content %}")
-        elif frontend['layout']:
-            with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
-                f.write(data)
-        elif frontend['index']:
-            with open(f"{project_dir}\\templates\\index.html", 'w') as f:
-                f.write(data)
+        handle_index_and_layout_creation(frontend, project_dir, data)
 
     # creating css file
     if frontend['addCss']:
         with open(f'{SOURCES}\\mainCss.txt', 'r') as f:
             css = f.read()
-        css = replace_placeholder(css, frontend['addNavBar'], '[[ nav ]]', read_navbar_substring('[[ navbar_css_start ]]'), placeholder_if_false = '[[ nav ]]\n\n')
-        css = replace_placeholder(css, frontend['addNavBar'], '[[ navbar_css_mobile ]]', read_navbar_substring('[[ navbar_css_mobile_start ]]'), placeholder_if_false = '[[ navbar_css_mobile ]]')
-        css = replace_placeholder(css, frontend['addNavBar'], '[[ navbar_css_animation ]]', read_navbar_substring('[[ navbar_css_animation_start ]]'), placeholder_if_false = '[[ navbar_css_animation ]]')
+        css = replace_placeholder(css, frontend['addNavBar'], '[[ nav ]]', get_navbar_substring(navbar, '[[ navbar_css_start ]]'), placeholder_if_false = '[[ nav ]]\n\n')
+        css = replace_placeholder(css, frontend['addNavBar'], '[[ navbar_css_mobile ]]', get_navbar_substring(navbar, '[[ navbar_css_mobile_start ]]'), placeholder_if_false = '[[ navbar_css_mobile ]]')
+        css = replace_placeholder(css, frontend['addNavBar'], '[[ navbar_css_animation ]]', get_navbar_substring(navbar, '[[ navbar_css_animation_start ]]'), placeholder_if_false = '[[ navbar_css_animation ]]')
         with open(f"{project_dir}\\static\\main.css", 'w') as f:
             f.write(css)
     
     # creating additional css file for checkbuttons and radiobuttons styles
     if frontend['checkRad']:
-        with open(f'{SOURCES}\\checkRad.txt', 'r') as f:
-            check_rad_css = f.read()
-        with open(f"{project_dir}\\static\\checkradio.css", 'w') as f:
-            f.write(check_rad_css)
+        create_checkradio_css_file()
 
     # creating js file
     if frontend['addJs']:
-        js = ''
-        if frontend['addNavBar']:
-            js = read_navbar_substring('[[ navbar_js_start ]]')
-        with open(f"{project_dir}\\static\\main.js", 'w') as f:
-            f.write(js)
+        create_js_file(frontend['addNavBar'], project_dir, navbar)
+    
     
 
 def create_css_link(filename):
@@ -297,8 +284,31 @@ def generate_model_string(req):
         data += f"\t{field['name']} = db.Column(db.{field['type']}, primary_key = {field['pk']}, nullable = {field['nullable']}, unique = {field['unique']})\n"
     return data
 
-def read_navbar_substring(section):
-    with open(f'{SOURCES}\\navbar.txt', 'r') as f:
-        navbar = f.read()
+def get_navbar_substring(navbar, section):
     return navbar[navbar.index(section) + len(section) : navbar.index(section.replace('start', 'end'))]
 
+def handle_index_and_layout_creation(frontend, project_dir, data):
+    if frontend['layout'] and frontend['index']:
+        with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
+            f.write(data)
+        with open(f"{project_dir}\\templates\\index.html", 'w') as f:
+            f.write("{% extends \"layout.html\" %}\n\n{% block content %}\n\n{% endblock content %}")
+    elif frontend['layout']:
+        with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
+            f.write(data)
+    elif frontend['index']:
+        with open(f"{project_dir}\\templates\\index.html", 'w') as f:
+            f.write(data)
+
+def create_js_file(add_navbar, project_dir, navbar):
+    js = ''
+    if add_navbar:
+        js = get_navbar_substring(navbar, '[[ navbar_js_start ]]')
+    with open(f"{project_dir}\\static\\main.js", 'w') as f:
+        f.write(js)
+
+def create_checkradio_css_file():
+    with open(f'{SOURCES}\\checkRad.txt', 'r') as f:
+        check_rad_css = f.read()
+    with open(f"{project_dir}\\static\\checkradio.css", 'w') as f:
+        f.write(check_rad_css)
