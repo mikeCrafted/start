@@ -196,7 +196,7 @@ def create_frontend(frontend, project_dir, project_name):
         data = data.replace('[[ project_name ]]', project_name)
         data = replace_placeholder(data, frontend['addCss'], '[[ main_css_link ]]', create_css_link('main.css'), placeholder_if_false = '[[ main_css_link ]]\n        ')
         data = replace_placeholder(data, frontend['checkRad'], '[[ radio_check_css_link ]]', create_css_link('checkradio.css'), placeholder_if_false = '[[ radio_check_css_link ]]\n        ')
-        data = replace_placeholder(data, frontend['addNavBar'], '[[ nav ]]', read_navbar_html_string())
+        data = replace_placeholder(data, frontend['addNavBar'], '[[ nav ]]', read_navbar_substring('[[ navbar_html_start ]]'))
         scripts_link = f"<script src=\"{{{{ url_for('static', filename = 'main.js') }}}}\"></script>"
         data = replace_placeholder(data, frontend['addJs'], '[[ scripts ]]', scripts_link, placeholder_if_false = '[[ scripts ]]')
 
@@ -217,17 +217,9 @@ def create_frontend(frontend, project_dir, project_name):
     if frontend['addCss']:
         with open(f'{SOURCES}\\mainCss.txt', 'r') as f:
             css = f.read()
-
-        if frontend['addNavBar']:
-            with open(f'{SOURCES}\\navbar.txt', 'r') as f:
-                navbar = f.read()
-            css = css.replace('[[ nav ]]', navbar[navbar.index('[[ navbar_css_start ]]') + 22 : navbar.index('[[ navbar_css_end ]]')])
-            css = css.replace('[[ navbar_css_mobile ]]', navbar[navbar.index('[[ navbar_css_mobile_start ]]') + 29 : navbar.index('[[ navbar_css_mobile_end ]]')])
-            css = css.replace('[[ navbar_css_animation ]]', navbar[navbar.index('[[ navbar_css_animation_start ]]') + 32 : navbar.index('[[ navbar_css_animation_end ]]')])
-        else:
-            css = css.replace('[[ nav ]]\n\n', '')
-            css = css.replace('[[ navbar_css_mobile ]]', '')
-            css = css.replace('[[ navbar_css_animation ]]', '')
+        css = replace_placeholder(css, frontend['addNavBar'], '[[ nav ]]', read_navbar_substring('[[ navbar_css_start ]]'), placeholder_if_false = '[[ nav ]]\n\n')
+        css = replace_placeholder(css, frontend['addNavBar'], '[[ navbar_css_mobile ]]', read_navbar_substring('[[ navbar_css_mobile_start ]]'), placeholder_if_false = '[[ navbar_css_mobile ]]')
+        css = replace_placeholder(css, frontend['addNavBar'], '[[ navbar_css_animation ]]', read_navbar_substring('[[ navbar_css_animation_start ]]'), placeholder_if_false = '[[ navbar_css_animation ]]')
         with open(f"{project_dir}\\static\\main.css", 'w') as f:
             f.write(css)
     
@@ -242,16 +234,13 @@ def create_frontend(frontend, project_dir, project_name):
     if frontend['addJs']:
         js = ''
         if frontend['addNavBar']:
-            with open(f'{SOURCES}\\navbar.txt', 'r') as f:
-                navbar = f.read()
-            js = navbar[navbar.index('[[ navbar_js_start ]]') + 21 : navbar.index('[[ navbar_js_end ]]')]
+            js = read_navbar_substring('[[ navbar_js_start ]]')
         with open(f"{project_dir}\\static\\main.js", 'w') as f:
             f.write(js)
     
 
 def create_css_link(filename):
     return f"<link rel=\"stylesheet\" type=\"text/css\" href=\"{{{{ url_for('static', filename = '{filename}') }}}}\">"
-
 
 def generate_db_config_string(db_type):
     if db_type == 'MySQL':
@@ -308,8 +297,8 @@ def generate_model_string(req):
         data += f"\t{field['name']} = db.Column(db.{field['type']}, primary_key = {field['pk']}, nullable = {field['nullable']}, unique = {field['unique']})\n"
     return data
 
-def read_navbar_html_string():
+def read_navbar_substring(section):
     with open(f'{SOURCES}\\navbar.txt', 'r') as f:
         navbar = f.read()
-    return navbar[navbar.index('[[ navbar_html_start ]]') + 23 : navbar.index('[[ navbar_html_end ]]')]
+    return navbar[navbar.index(section) + len(section) : navbar.index(section.replace('start', 'end'))]
 
