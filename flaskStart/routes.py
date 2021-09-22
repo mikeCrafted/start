@@ -2,7 +2,7 @@ from flask import render_template, request, make_response, jsonify
 from flaskStart import app, SOURCES
 from venv import EnvBuilder
 import secrets, os, re
-from helper_functions import *
+from flaskStart.helper_functions import *
 
 @app.route('/')
 def index():        
@@ -175,29 +175,17 @@ def create_frontend(frontend, project_dir, project_name):
         with open(f'{SOURCES}\\navbar.txt', 'r') as f:
             navbar = f.read()
         
-        data = data.replace('[[ project_name ]]', project_name)
-        data = replace_placeholder(data, frontend['addCss'], '[[ main_css_link ]]', create_css_link('main.css'), placeholder_if_false = '[[ main_css_link ]]\n        ')
-        data = replace_placeholder(data, frontend['checkRad'], '[[ radio_check_css_link ]]', create_css_link('checkradio.css'), placeholder_if_false = '[[ radio_check_css_link ]]\n        ')
-        data = replace_placeholder(data, frontend['addNavBar'], '[[ nav ]]', get_navbar_substring(navbar, '[[ navbar_html_start ]]'))
-        scripts_link = f"<script src=\"{{{{ url_for('static', filename = 'main.js') }}}}\"></script>"
-        data = replace_placeholder(data, frontend['addJs'], '[[ scripts ]]', scripts_link, placeholder_if_false = '[[ scripts ]]')
-
+        data = generate_layout_html(data, project_name, frontend, navbar)
         # saving with correct filename
         handle_index_and_layout_creation(frontend, project_dir, data)
 
     # creating css file
     if frontend['addCss']:
-        with open(f'{SOURCES}\\mainCss.txt', 'r') as f:
-            css = f.read()
-        css = replace_placeholder(css, frontend['addNavBar'], '[[ nav ]]', get_navbar_substring(navbar, '[[ navbar_css_start ]]'), placeholder_if_false = '[[ nav ]]\n\n')
-        css = replace_placeholder(css, frontend['addNavBar'], '[[ navbar_css_mobile ]]', get_navbar_substring(navbar, '[[ navbar_css_mobile_start ]]'), placeholder_if_false = '[[ navbar_css_mobile ]]')
-        css = replace_placeholder(css, frontend['addNavBar'], '[[ navbar_css_animation ]]', get_navbar_substring(navbar, '[[ navbar_css_animation_start ]]'), placeholder_if_false = '[[ navbar_css_animation ]]')
-        with open(f"{project_dir}\\static\\main.css", 'w') as f:
-            f.write(css)
-    
+        create_css_file(frontend['addNavBar'], navbar, project_dir)
+        
     # creating additional css file for checkbuttons and radiobuttons styles
     if frontend['checkRad']:
-        create_checkradio_css_file(project_dir, SOURCES)
+        create_checkradio_css_file(project_dir)
 
     # creating js file
     if frontend['addJs']:

@@ -1,3 +1,5 @@
+from flaskStart import SOURCES
+
 # helper function to return all imports needed for __init__ or routes file based on user selection
 def get_imports(req, destination):
     imports = ""
@@ -100,8 +102,27 @@ def create_js_file(add_navbar, project_dir, navbar):
     with open(f"{project_dir}\\static\\main.js", 'w') as f:
         f.write(js)
 
-def create_checkradio_css_file(project_dir, SOURCES):
+def create_checkradio_css_file(project_dir):
     with open(f'{SOURCES}\\checkRad.txt', 'r') as f:
         check_rad_css = f.read()
     with open(f"{project_dir}\\static\\checkradio.css", 'w') as f:
         f.write(check_rad_css)
+
+def create_css_file(add_navbar, navbar, project_dir):
+    with open(f'{SOURCES}\\mainCss.txt', 'r') as f:
+        css = f.read()
+    css = replace_placeholder(css, add_navbar, '[[ nav ]]', get_navbar_substring(navbar, '[[ navbar_css_start ]]'), placeholder_if_false = '[[ nav ]]\n\n')
+    css = replace_placeholder(css, add_navbar, '[[ navbar_css_mobile ]]', get_navbar_substring(navbar, '[[ navbar_css_mobile_start ]]'), placeholder_if_false = '[[ navbar_css_mobile ]]')
+    css = replace_placeholder(css, add_navbar, '[[ navbar_css_animation ]]', get_navbar_substring(navbar, '[[ navbar_css_animation_start ]]'), placeholder_if_false = '[[ navbar_css_animation ]]')
+    with open(f"{project_dir}\\static\\main.css", 'w') as f:
+        f.write(css)
+
+def generate_layout_html(data, project_name, frontend, navbar):
+    data = data.replace('[[ project_name ]]', project_name)
+    data = replace_placeholder(data, frontend['addCss'], '[[ main_css_link ]]', create_css_link('main.css'), placeholder_if_false = '[[ main_css_link ]]\n        ')
+    data = replace_placeholder(data, frontend['checkRad'], '[[ radio_check_css_link ]]', create_css_link('checkradio.css'), placeholder_if_false = '[[ radio_check_css_link ]]\n        ')
+    data = replace_placeholder(data, frontend['addNavBar'], '[[ nav ]]', get_navbar_substring(navbar, '[[ navbar_html_start ]]'))
+    scripts_link = f"<script src=\"{{{{ url_for('static', filename = 'main.js') }}}}\"></script>"
+    data = replace_placeholder(data, frontend['addJs'], '[[ scripts ]]', scripts_link, placeholder_if_false = '[[ scripts ]]')
+    return data
+
