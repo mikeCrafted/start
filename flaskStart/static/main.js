@@ -96,6 +96,7 @@ var app = new Vue({
             layout: true,
             index: true,
             checkRad: true,
+            createFormTemplates: true
         },
     },
     methods: {

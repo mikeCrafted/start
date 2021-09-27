@@ -310,6 +310,10 @@
                     <input v-model="frontend.checkRad" @click="frontend.checkRad = !frontend.checkRad" type="checkbox">
                     <span class="checkmark-ckb"></span>
                 </label>
+                <label v-if="wtForms.show" class="container">Generate HTML Templates for Forms
+                    <input v-model="frontend.createFormTemplates" @click="frontend.createFormTemplates = !frontend.createFormTemplates" type="checkbox">
+                    <span class="checkmark-ckb"></span>
+                </label>
             </div>
         </transition>
     </section>

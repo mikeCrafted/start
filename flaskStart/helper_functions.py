@@ -126,3 +126,6 @@ def generate_layout_html(data, project_name, frontend, navbar):
     data = replace_placeholder(data, frontend['addJs'], '[[ scripts ]]', scripts_link, placeholder_if_false = '[[ scripts ]]')
     return data
 
+def create_form_templates(use_layout):
+    pass
+

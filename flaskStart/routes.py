@@ -169,12 +169,12 @@ def create_models_file(req, project_dir):
         f.write(data)
 
 def create_frontend(frontend, project_dir, project_name):
-    if frontend['layout'] or frontend['index']:
-        with open(f'{SOURCES}\\layout.txt', 'r') as f:
+    with open(f'{SOURCES}\\layout.txt', 'r') as f:
             data = f.read()
-        with open(f'{SOURCES}\\navbar.txt', 'r') as f:
-            navbar = f.read()
-        
+    with open(f'{SOURCES}\\navbar.txt', 'r') as f:
+        navbar = f.read()
+    
+    if frontend['layout'] or frontend['index']:
         data = generate_layout_html(data, project_name, frontend, navbar)
         # saving with correct filename
         handle_index_and_layout_creation(frontend, project_dir, data)
@@ -190,3 +190,6 @@ def create_frontend(frontend, project_dir, project_name):
     # creating js file
     if frontend['addJs']:
         create_js_file(frontend['addNavBar'], project_dir, navbar)
+    
+    if frontend['createFormTemplates']:
+        create_form_templates(frontend['layout'])
