@@ -1,4 +1,5 @@
-from flaskStart import SOURCES
+from flaskStart import SOURCES, BASE_TEMPLATE
+import re
 
 # helper function to return all imports needed for __init__ or routes file based on user selection
 def get_imports(req, destination):
@@ -87,7 +88,7 @@ def handle_index_and_layout_creation(frontend, project_dir, data):
         with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
             f.write(data)
         with open(f"{project_dir}\\templates\\index.html", 'w') as f:
-            f.write("{% extends \"layout.html\" %}\n\n{% block content %}\n\n{% endblock content %}")
+            f.write(BASE_TEMPLATE)
     elif frontend['layout']:
         with open(f"{project_dir}\\templates\\layout.html", 'w') as f:
             f.write(data)
@@ -124,8 +125,31 @@ def generate_layout_html(data, project_name, frontend, navbar):
     data = replace_placeholder(data, frontend['addNavBar'], '[[ nav ]]', get_navbar_substring(navbar, '[[ navbar_html_start ]]'))
     scripts_link = f"<script src=\"{{{{ url_for('static', filename = 'main.js') }}}}\"></script>"
     data = replace_placeholder(data, frontend['addJs'], '[[ scripts ]]', scripts_link, placeholder_if_false = '[[ scripts ]]')
+    data = replace_placeholder(data, not frontend['layout'], '{% block content %}{% endblock %}', '')
     return data
 
-def create_form_templates(use_layout):
-    pass
+def handle_validators_and_fieldtypes_imports(data, all_fields, all_validators):
+    # removing all duplicates using sets
+    all_fields = set(all_fields)
+    all_validators = set(all_validators)
+    data = data.replace('[[ field_types ]]', ', '.join(all_fields))
+    # using reg expressions to remove everything between parantheses on top of file when importing validators
+    data = data.replace('[[ validators ]]', re.sub(r"\([^()]*\)", "", ', '.join(all_validators)))
+
+def insert_string_at_index(base_string, index, string_to_insert):
+    start = base_string[:index]
+    end = base_string[index:]
+    return start + string_to_insert + end
+
+def create_html_form_field_string(html_form_string_template, field_name):
+    html_form_field_string = html_form_string_template
+    while '[[ field_name ]]' in html_form_field_string:
+        html_form_field_string = html_form_field_string.replace('[[ field_name ]]', field_name)
+    return '\n' + html_form_field_string + '\n'
+
+def shift_string_lines(string, shift_value):
+    return '\n'.join([shift_value + line for line in string.split('\n')])
+
+
+
 

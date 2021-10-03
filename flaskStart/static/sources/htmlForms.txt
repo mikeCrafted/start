@@ -1,0 +1,11 @@
+        {{ form.[[ field_name ]].label(class="") }}
+        {% if form.[[ field_name ]].errors %}
+            {{ form.[[ field_name ]](class="") }}
+            <div class="invalid-feedback">
+                {% for error in form.[[ field_name ]].errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ form.[[ field_name ]](class="") }}
+        {% endif %}
