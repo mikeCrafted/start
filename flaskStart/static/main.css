@@ -129,11 +129,32 @@ input[type=text], input[type=number], select {
     height: 2em;
 }
 
-@keyframes deleteIcon { 100% { -webkit-transform: scale(1.1);} }
+@keyframes scaleAnimation { 100% { -webkit-transform: scale(1.1);} }
 
-.delete-icon:hover {
+.delete-icon:hover, .info-icon:hover, .close-icon:hover {
     cursor: pointer;
-    animation: deleteIcon .2s forwards;
+    animation: scaleAnimation .2s forwards;
+}
+
+.info-icon {
+    width: 2.5em;
+    height: 2.5em;
+    margin-left: 1em;
+}
+
+.close-icon {
+    width: 2.5em;
+    height: 2.5em;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
+
+.flex-start {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .alert {
@@ -346,7 +367,7 @@ button:disabled {
     min-width: 50vw;
 }
 
-.add-form-btn, .reset-validators-btn, .add-blueprint-btn {
+.add-form-btn, .reset-validators-btn, .add-blueprint-btn, .add-field-btn {
     max-width: 20em;
     width: 15em;
     margin-left: auto;
@@ -457,6 +478,21 @@ button:disabled {
 
 .css-config-container {
     margin-left: 1.5em;
+}
+
+.modal {
+    display: flex;
+    position: fixed;
+    top: 10vh;
+    width: 80vw;
+    height: 80vh;
+    z-index: 2;
+    border: var(--border);
+    border-radius: 0.3em;
+    box-shadow: var(--shadow);
+    background-color: var(--nav-bg-color);
+    padding: 1em;
+    color: var(--nav-links-color);
 }
 
 @keyframes versionInputSuccess {

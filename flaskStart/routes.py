@@ -5,44 +5,28 @@ import secrets, os
 from flaskStart.helper_functions import *
 
 @app.route('/')
-def index():        
+def index():
     return render_template('index.html')
 
 @app.route('/create', methods = ['POST'])
 def create():
     req = request.get_json()
-    
+    # creating temp directory so that multiple projects dont interfere, creating root folder of project
     temp_dir = f"{app.root_path}\\generated\\{secrets.token_hex(16)}"
     project_dir = f"{temp_dir}\\{req['projectName']}"
-    # creating temp directory so that multiple projects dont interfere
     os.mkdir(temp_dir)
-    # creating root folder of project
     os.mkdir(project_dir)
-    
-    # creating run.py file
     create_run_file(project_dir, req['projectName'])
-    
-    # creating requirements file
-    with open(f'{project_dir}\\requirements.txt', 'w') as f:
-        for package in req['requirements']['packages']:
-            f.write(f"{package['name']}{package['type']}{package['version']}\n")
-
+    create_requirements_file(project_dir, req['requirements']['packages'])
     # second level project folder for routes, blueprints etc.
     project_dir = f"{project_dir}\\{req['projectName']}"
     os.mkdir(project_dir)
-    
-    # create templates folder
+    # create templates and static folders
     os.mkdir(f"{project_dir}\\templates")
-    # create static folder
     os.mkdir(f"{project_dir}\\static")
-
     if req['frontend']['show']:
         create_frontend(req['frontend'], project_dir, req['projectName'])
-        
-    # create main __init__ file
     create_init_file(req, project_dir)
-
-    # creating virtual environment
     if req['virtEnv']['show'] == True:
         virt_env_data = req['virtEnv']
         create_virt_env(name = virt_env_data['name'],
@@ -50,18 +34,14 @@ def create():
                         use_clear = virt_env_data['params'][1], 
                         use_with_pip = virt_env_data['params'][2],
                         target_dir = project_dir)
-    
-    # get all forms
     if req['wtForms']['show']:
         wtForms = req['wtForms']
         if wtForms['asMainFile']:
             create_forms_file(wtForms['forms'], project_dir, req['frontend'], req['projectName'])
-
     if req['blueprints']['show']:
         create_blueprints(req['blueprints'], req['wtForms'], project_dir, req['projectName'])
     else:
         create_routes_file(req, project_dir)
-    
     if req['addDatabase']:
         create_models_file(req, project_dir)
 
@@ -100,6 +80,11 @@ def create_run_file(project_dir, project_name):
         data = f.read()
     with open(f'{project_dir}\\run.py', 'w') as f:
         f.write(data.replace('[[ project_name ]]', project_name))
+
+def create_requirements_file(project_dir, packages):
+    with open(f'{project_dir}\\requirements.txt', 'w') as f:
+        for package in packages:
+            f.write(f"{package['name']}{package['type']}{package['version']}\n")
 
 def create_forms_file(forms_list, project_dir, frontend, project_name):
     with open(f'{SOURCES}\\forms.txt', 'r') as f:

@@ -5,6 +5,15 @@
         <div class="loader"></div>
     </div>
 
+    <transition name="fade">
+        <div v-if="validatorsModal" class="modal validators-modal">
+            <h2>Adding validators</h2>
+            <img class="close-icon" 
+                src="{{ url_for('static', filename = 'img/close.svg') }}" alt="Close"
+                @click="validatorsModal = !validatorsModal">
+        </div>
+    </transition>
+
     <section class="project-name-section">
         <h1 v-if="projectName == ''">Generate Flask project template</h1>
         <h1 v-else>Generate [[ projectName ]]</h1>
@@ -201,12 +210,21 @@
                         </div>
                     </div>
                     
-                    <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })" v-bind:disabled="!wtForms.forms[index].lastFieldFilled" class="btn med-btn orange-btn mt-1">Add Field</button>
+                    <button @click="extendArrayByElement(form.fields, { name: '', validators: [] })"
+                            v-bind:disabled="!wtForms.forms[index].lastFieldFilled" 
+                            class="btn med-btn orange-btn mt-1 add-field-btn">Add Field</button>
                 </div>
                 
-                <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" class="btn med-btn orange-btn add-form-btn mb-1">Add Form</button>
+                <button @click="extendArrayByElement(wtForms.forms, { name: '', lastFieldFilled: true, fields: [{ name: '', validators: [] }] })" 
+                        class="btn med-btn orange-btn add-form-btn mb-1">Add Form</button>
 
-                <h2 class="mb-1">Configure Validators</h2>
+                <span class="mb-1 flex-start">
+                    <h2>Configure Validators</h2>
+                    <img @click="validatorsModal = !validatorsModal" src="{{ url_for('static', filename = 'img/info.svg') }}" class="info-icon" alt="Info">
+                </span>
+
+                
+
                 <div class="validators-container">
                     <div v-for="validator in wtForms.validators">
                         <label class="container">

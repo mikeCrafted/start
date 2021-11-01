@@ -5,7 +5,6 @@
     #) adding background workers
     #) make components collapsible
     #) add description for validators etc.
-    #) generate html files with forms
 */
 
 var app = new Vue({
@@ -16,6 +15,7 @@ var app = new Vue({
         addDatabase: false,
         addAuthSys: false,
         showLoader: false,
+        validatorsModal: false,
         virtEnv: {
             show: false,
             name: 'venv',
@@ -55,9 +55,9 @@ var app = new Vue({
                     name: 'RegistrationForm',
                     lastFieldFilled: true,
                     fields: [
-                        { name: 'username', label: 'Username', validators: [], type: 'StringField' },
-                        { name: 'email', label: 'Email', validators: [], type: 'StringField' },
-                        { name: 'password', label: 'Password', validators: [], type: 'PasswordField' },
+                        { name: 'username', label: 'Username', validators: ["DataRequired()"], type: 'StringField' },
+                        { name: 'email', label: 'Email', validators: ["DataRequired()"], type: 'StringField' },
+                        { name: 'password', label: 'Password', validators: ["DataRequired()"], type: 'PasswordField' },
                         { name: 'confirm_password', label: 'Confirm Password', validators: ["EqualTo('password')"], type: 'PasswordField' }
                     ] 
                 },
