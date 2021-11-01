@@ -47,7 +47,6 @@ var app = new Vue({
         },
         wtForms: {
             show: false,
-            useCsrf: true,
             asMainFile: true,
             forms: [
                 { 

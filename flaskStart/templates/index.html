@@ -142,14 +142,7 @@
         <transition name="fade">
             <div class="wtforms-container" v-if="wtForms.show">
                 <h2 class="mb-1">Configure WT Forms</h2>
-                <div class="mb-1">
-                    <span class="text">Use CSRF Token</span>
-                    <select v-model="wtForms.useCsrf">
-                        <option>true</option>
-                        <option>false</option>
-                    </select>
-                </div>
-                
+                                
                 <label class="container">Use Main Forms File
                     <input v-model="wtForms.asMainFile" @click="wtForms.asMainFile = !wtForms.asMainFile" type="checkbox">
                     <span class="checkmark-ckb"></span>

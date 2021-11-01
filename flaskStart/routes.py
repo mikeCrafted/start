@@ -109,7 +109,8 @@ def create_forms_file(forms_list, project_dir, frontend, project_name):
     all_fields = []
     all_validators = []
     for form in forms_list:
-        html_form_string = '\t<form method="POST" enctype="multipart/form-data" action="">'
+        html_form_string = '\t<form method="POST" enctype="multipart/form-data" action="">\n'
+        html_form_string += f'\t\t{{{{ form.hidden_tag() }}}}'
         # for python forms file
         python_form_string += f"class {form['name']}(FlaskForm):"
         for field in form['fields']:
@@ -120,6 +121,7 @@ def create_forms_file(forms_list, project_dir, frontend, project_name):
             # for html form templates
             if frontend['show'] and frontend['createFormTemplates']:
                 html_form_string += create_html_form_field_string(html_form_string_template, field['name'])
+        html_form_string += '\n' + shift_string_lines(f'{{{{ form.submit(class="") }}}}', '\t\t') + '\n'
         html_form_string += '\t</form>'
         # for html form templates
         if frontend['show'] and frontend['createFormTemplates']:
@@ -138,7 +140,7 @@ def create_forms_file(forms_list, project_dir, frontend, project_name):
                 with open(form_template_name, 'w') as f:
                     f.write(insert_string_at_index(layout_template, index, shift_string_lines(html_form_string, '\t\t')))
         python_form_string += '\n\n'
-    handle_validators_and_fieldtypes_imports(python_form_string, all_fields, all_validators)
+    python_form_string = handle_validators_and_fieldtypes_imports(python_form_string, all_fields, all_validators)
     with open(f'{project_dir}\\forms.py', 'w') as f:
         f.write(python_form_string)
 
@@ -158,24 +160,28 @@ def create_init_file(req, project_dir):
         f.write(data)
 
 def create_routes_file(req, project_dir):
+    with open(f'{SOURCES}\\routes.txt', 'r') as f:
+        routes_source = f.read()
     data = f"from {req['projectName']} import app{get_imports(req, 'routes')}\n"
-    data += "from flask import request, render_template, url_for, redirect\n"
+    data += "from flask import request, render_template, url_for, redirect, flash\n"
     if req['emails']['show']:
         data += "from flask_mail import Message\n"
     # import models
     if req['addAuthSys']: 
         data += f"from {req['projectName']}.models import {req['authSys']['userTableName']}\n"
+        data += "from flask_login import login_user, current_user, logout_user, login_required\n"
     # import forms
     if req['wtForms']['show']:
         data += f"from {req['projectName']}.forms import {', '.join([form['name'] for form in req['wtForms']['forms']])}\n"
-    if req['frontend']['show'] and req['frontend']['index']:
-        data += "\n@app.route('/')\n"
-        data += "def index():\n\t"
-        data += "return render_template('index.html')"  
-    else:
-        data += "\n@app.route('/')\n"
-        data += "def index():\n\t"     
-        data += "return '<h1>Hello World!</h1>'"
+    # creating index route
+    data += generate_index_route(req['frontend'], routes_source)
+    # creating authentication routes
+    if req['addAuthSys']:
+        data += '# ============  Registration, Login, Logout ============\n'
+        data += get_section_substring(routes_source, '[[ logout_route_start ]]')
+        data += get_section_substring(routes_source, '[[ login_route_start ]]')
+        data += get_section_substring(routes_source, '[[ register_route_start ]]')
+        data += '# ============  ============  ============  ============\n'
     with open(f'{project_dir}\\routes.py', 'w') as f:
         f.write(data)
 
