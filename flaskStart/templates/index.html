@@ -11,6 +11,16 @@
             <img class="close-icon" 
                 src="{{ url_for('static', filename = 'img/close.svg') }}" alt="Close"
                 @click="validatorsModal = !validatorsModal">
+            <div class="modal-text">
+                Each field can have multiple validators. Select the ones you need in the validators-box and click
+                the corresponding "Set validators" button for a field. Then the selected validators will appear in the 
+                validators section. You can delete them by clicking on each.
+            </div>
+            <div class="modal-images">
+                <img class="big-modal-img" src="{{ url_for('static', filename = 'img/validators/val1.JPG') }}">
+                <img src="{{ url_for('static', filename = 'img/validators/val2.JPG') }}">
+                <img src="{{ url_for('static', filename = 'img/validators/val3.JPG') }}">
+            </div> 
         </div>
     </transition>
 
