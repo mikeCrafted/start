@@ -8,6 +8,10 @@ from flaskStart.helper_functions import *
 def index():
     return render_template('index.html')
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 @app.route('/create', methods = ['POST'])
 def create():
     req = request.get_json()
@@ -47,11 +51,6 @@ def create():
 
     return make_response(jsonify('ok'), 200)
 
-# DB
-# from flaskblog import db
-# from flaskblog.models import User, Post
-# db.create_all()
-# db.session.commit()
 
 def create_virt_env(name, use_system_site_packages, use_clear, use_with_pip, target_dir):
     my_env_builder = EnvBuilder(system_site_packages = use_system_site_packages,

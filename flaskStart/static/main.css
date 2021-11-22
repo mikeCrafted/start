@@ -519,6 +519,13 @@ button:disabled {
     max-width: 100%;
 }
 
+.about-text {
+    font-size: 1.2em;
+    width: 80vw;
+    margin-top: 1em;
+    text-align: center;
+}
+
 @keyframes versionInputSuccess {
     0% {
         background-color: white;

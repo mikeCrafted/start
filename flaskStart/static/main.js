@@ -4,7 +4,6 @@
     #) adding custom tables, not just User, foreign keys
     #) adding background workers
     #) make components collapsible
-    #) add description for validators etc.
 */
 
 var app = new Vue({
